@@ -1,7 +1,7 @@
 .PHONY: all install clean
 PREFIX ?= /usr
-INCLUDE = ${PREFIX}/include
-LIBDIR = ${PREFIX}/lib
+INCLUDE = ${DESTDIR}${PREFIX}/include
+LIBDIR = ${DESTDIR}${PREFIX}/lib
 
 all:
 	gfortran -c src/indexfile.f90 -std=f2008 -fPIC
