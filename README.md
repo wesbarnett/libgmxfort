@@ -67,7 +67,7 @@ Note that when you access `x` you will still have to give it the frame number as
 the first argument, even if you only read in one frame. `read_next` actually
 returns the number of frames read in. This is useful to near the end of the
 file. Additionally you can always get the number of frames stored in a
-trajectory object with the `nframes` member:
+`Trajectory` object with the `nframes` member:
 
     trj%nframes
 
@@ -97,6 +97,14 @@ And now the step for the same:
 
     integer :: mystep
     mystep = trj%s(1)
+
+Finally, when done with the `Trajectory` object, you can close the file:
+
+    trj%close()
+
+There are several functions and subroutines in the `gmxfort_utils` module,
+including periodic boundary and distance calculations. Check out the source file
+for what is available.
 
 ## License
 
