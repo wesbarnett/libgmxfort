@@ -5,6 +5,7 @@
 module gmxfort_trajectory
 
     use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT
+    use gmxfort_index
 
     implicit none
     public
@@ -30,12 +31,15 @@ module gmxfort_trajectory
     type, public :: Trajectory
         type(xdrfile), pointer :: xd
         type(Frame), allocatable :: frameArray(:)
+        type(IndexFile) :: ndx
         integer :: NFRAMES
         integer :: NATOMS
     contains
-        procedure :: open => trajectory_constructor !TODO, make a true constructor
+        procedure :: open => trajectory_constructor
         procedure :: read => trajectory_read
-        procedure :: getXYZ => trajectory_get_xyz
+        procedure :: close => trajectory_close
+        procedure :: x => trajectory_get_xyz
+        procedure :: n => trajectory_get_natoms
     end type
 
     ! the data type located in libxdrfile
@@ -83,17 +87,22 @@ module gmxfort_trajectory
 
 contains
 
-    subroutine trajectory_constructor(trj, filename_in)
+    subroutine trajectory_constructor(this, filename_in, ndxfile)
 
         use, intrinsic :: iso_c_binding, only: C_NULL_CHAR, C_CHAR, c_f_pointer
 
         implicit none
-        class(Trajectory), intent(inout) :: trj
+        class(Trajectory), intent(inout) :: this
         type(C_PTR) :: xd_c
         character (len=*), intent(in) :: filename_in
+        character (len=*), intent(in), optional :: ndxfile
         character (len=206) :: filename
         logical :: ex
         integer :: STAT
+
+        if (present(ndxfile)) then
+            call this%ndx%read(ndxfile)
+        end if
 
         inquire(file=trim(filename_in), exist=ex)
 
@@ -108,7 +117,7 @@ contains
         filename = trim(filename_in)//C_NULL_CHAR
 
         ! Get number of atoms in system and allocate xyzition array.
-        STAT = read_xtc_natoms(filename, trj%NATOMS)
+        STAT = read_xtc_natoms(filename, this%NATOMS)
 
         if (STAT .ne. 0) then
             write(0,*)
@@ -119,10 +128,10 @@ contains
 
         ! Open the file for reading. Convert C pointer to Fortran pointer.
         xd_c = xdrfile_open(filename,"r")
-        call c_f_pointer(xd_c, trj % xd)
+        call c_f_pointer(xd_c, this % xd)
 
         write(0,'(a)') " Opened "//trim(filename)//" for reading."
-        write(0,'(a,i0,a)') " ", trj % NATOMS, " atoms present in system."
+        write(0,'(a,i0,a)') " ", this % NATOMS, " atoms present in system."
         write(0,*)
 
     end subroutine trajectory_constructor
@@ -162,27 +171,47 @@ contains
 
     end subroutine trajectory_read
 
-    subroutine close_xtc(trj)
+    subroutine trajectory_close(this)
 
         implicit none
-        class(Trajectory), intent(inout) :: trj
+        class(Trajectory), intent(inout) :: this
         integer :: STAT
 
-        STAT = xdrfile_close(trj % xd)
+        STAT = xdrfile_close(this % xd)
 
-    end subroutine close_xtc
+    end subroutine trajectory_close
 
-    subroutine trajectory_get_xyz(trj, frame, atom, xyz)
+    function trajectory_get_xyz(this, frame, atom, group)
 
         implicit none
+        real :: trajectory_get_xyz(3)
         integer, intent(in) :: frame
         integer, intent(in) :: atom
-        class(Trajectory), intent(in) :: trj
-        real, intent(out) :: xyz(3)
+        class(Trajectory), intent(inout) :: this
+        character (len=*), intent(in), optional :: group
 
-        xyz = trj%frameArray(frame)%xyz(:,atom)
+        if (present(group)) then
+            trajectory_get_xyz = this%frameArray(frame)%xyz(:,this%ndx%get(group,atom))
+        else
+            trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom)
+        end if
 
-    end subroutine trajectory_get_xyz
+    end function trajectory_get_xyz
+
+    function trajectory_get_natoms(this, group)
+
+        implicit none
+        integer :: trajectory_get_natoms
+        class(Trajectory), intent(in) :: this
+        character (len=*), intent(in), optional :: group
+
+        if (present(group)) then
+            trajectory_get_natoms = this%ndx%get_natoms(group)
+        else
+            trajectory_get_natoms = this%NATOMS
+        end if
+
+    end function trajectory_get_natoms
 
 end module gmxfort_trajectory
 

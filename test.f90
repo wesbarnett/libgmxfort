@@ -4,16 +4,13 @@ program test
     use gmxfort_index
 
     type(Trajectory) :: trj
-    type(IndexFile) :: ndx
 
-    !call trj%open("traj.xtc")
-    !call trj%read()
+    call trj%open("traj.xtc", "index.ndx")
+    call trj%read()
+    call trj%close()
 
-    call ndx%read("index.ndx")
-    print *, ndx%get("HW2",2)
-
-    !do I=1, trj%NFRAMES
-    !    print *, trj%frameArray(I)%box(:,:)
-    !end do
+    do I=1, trj%NFRAMES
+        print *, trj%x(I,1,"HW2")
+    end do
 
 end program test

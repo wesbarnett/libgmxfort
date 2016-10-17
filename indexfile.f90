@@ -149,7 +149,7 @@ contains
 
         implicit none
         integer indexfile_get_natoms
-        class(IndexFile), intent(inout) :: this
+        class(IndexFile), intent(in) :: this
         character (len=*) :: group_name
         integer :: J
 
