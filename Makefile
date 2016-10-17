@@ -1,6 +1,7 @@
 .PHONY: all
 
 all:
-	gfortran -c gmxfort.f90 -lxdrfile  -std=f2008
-	gfortran gmxfort.o test.f90 -lxdrfile
+	gfortran -c gmx.f90 -lxdrfile  -std=f2008
+	gfortran -c ndx.f90 -lxdrfile  -std=f2008
+	gfortran ndx.o gmx.o test.f90 -lxdrfile
 

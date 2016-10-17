@@ -1,8 +1,8 @@
 !  XDR Fortran Interface
-!  2013 (c) James W. Barnett <jbarnet4@tulane.edu>
+!  2016 (c) James W. Barnett <jbarnet4@tulane.edu>
 !  https://github.com/wesbarnett/
 
-module gmx
+module gmxfort_trajectory
 
     use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT
 
@@ -184,5 +184,5 @@ contains
 
     end subroutine trajectory_get_xyz
 
-end module gmx
+end module gmxfort_trajectory
 
