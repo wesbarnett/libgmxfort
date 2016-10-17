@@ -8,7 +8,7 @@ program angles
 
     implicit none
 
-    character :: index_grp = "Site"
+    character (len=*), parameter :: index_grp = "Site"
 
     type(Trajectory) :: trj
     integer :: I, J, K, U
