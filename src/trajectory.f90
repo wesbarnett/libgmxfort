@@ -44,6 +44,8 @@ module gmxfort_trajectory
         procedure :: x => trajectory_get_xyz
         procedure :: n => trajectory_get_natoms
         procedure :: b => trajectory_get_box
+        procedure :: t => trajectory_get_time
+        procedure :: s => trajectory_get_step
     end type
 
     ! the data type located in libxdrfile
@@ -265,13 +267,35 @@ contains
     function trajectory_get_box(this, frame)
 
         implicit none
-        real(8) :: trajectory_get_box(3,3)
+        real :: trajectory_get_box(3,3)
         class(Trajectory), intent(in) :: this
         integer, intent(in) :: frame
 
         trajectory_get_box = this%frameArray(frame)%box
 
     end function trajectory_get_box
+
+    function trajectory_get_time(this, frame)
+
+        implicit none
+        real :: trajectory_get_time
+        class(Trajectory), intent(in) :: this
+        integer, intent(in) :: frame
+
+        trajectory_get_time = this%frameArray(frame)%time
+
+    end function trajectory_get_time
+
+    function trajectory_get_step(this, frame)
+
+        implicit none
+        integer :: trajectory_get_step
+        class(Trajectory), intent(in) :: this
+        integer, intent(in) :: frame
+
+        trajectory_get_step = this%frameArray(frame)%step
+
+    end function trajectory_get_step
 
 end module gmxfort_trajectory
 

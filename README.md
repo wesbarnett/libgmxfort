@@ -86,6 +86,18 @@ frame:
     real :: mybox(3,3)
     mybox = trj%b(2)
 
+You can also get the simulation time and step corresponding with a frame you
+read in, using `t` and `s`, respectively. The following get the time associated
+with the first frame read in:
+
+    real :: mytime
+    mytime = trj%t(1)
+
+And now the step for the same:
+
+    integer :: mystep
+    mystep = trj%s(1)
+
 ## License
 
 libgmxfort
