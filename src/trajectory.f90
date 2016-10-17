@@ -24,7 +24,7 @@ module gmxfort_trajectory
     implicit none
     private
 
-    type, public :: Frame
+    type :: Frame
         real(C_FLOAT), allocatable :: xyz(:,:)
         integer(C_INT) :: NUMATOMS, STEP, STAT
         real(C_FLOAT) :: box(3,3), prec, time
@@ -50,44 +50,46 @@ module gmxfort_trajectory
 
     ! the data type located in libxdrfile
     type, bind(C) :: xdrfile
-      type(C_PTR) :: fp, xdr
-      character(kind=C_CHAR) :: mode
-      integer(C_INT) :: buf1, buf1size, buf2, buf2size
+        type(C_PTR) :: fp, xdr
+        character(kind=C_CHAR) :: mode
+        integer(C_INT) :: buf1, buf1size, buf2, buf2size
     end type xdrfile
 
     ! interface with libxdrfile
     interface 
 
-      integer(C_INT) function read_xtc_natoms(filename,NUMATOMS) bind(C, name='read_xtc_natoms')
-        import
-        character(kind=C_CHAR), intent(in) :: filename
-        integer(C_INT), intent(out) :: NUMATOMS
-      end function
+        integer(C_INT) function read_xtc_natoms(filename,NUMATOMS) bind(C, name='read_xtc_natoms')
+            import
+            character(kind=C_CHAR), intent(in) :: filename
+            integer(C_INT), intent(out) :: NUMATOMS
+        end function
 
-      type(C_PTR) function xdrfile_open(filename,mode) bind(C, name='xdrfile_open')
-        import
-        character(kind=C_CHAR), intent(in) :: filename(*), mode(*)
-      end function
+        ! TODO: Not used in this module
+        type(C_PTR) function xdrfile_open(filename,mode) bind(C, name='xdrfile_open')
+            import
+            character(kind=C_CHAR), intent(in) :: filename(*), mode(*)
+        end function
 
-      integer(C_INT) function read_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='read_xtc')
-        import
-        type(xdrfile), intent(in) :: xd
-        integer(C_INT), intent(out) :: NUMATOMS, STEP
-        real(C_FLOAT), intent(out) :: time, prec, box(*), x(*)
-      end function
+        integer(C_INT) function read_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='read_xtc')
+            import
+            type(xdrfile), intent(in) :: xd
+            integer(C_INT), intent(out) :: NUMATOMS, STEP
+            real(C_FLOAT), intent(out) :: time, prec, box(*), x(*)
+        end function
 
-      integer(C_INT) function write_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='write_xtc')
-        import
-        type(C_PTR), intent(in) :: xd
-        integer(C_INT), value, intent(in) :: NUMATOMS, STEP
-        real(C_FLOAT), intent(in) :: box(*), x(*)
-        real(C_FLOAT), value, intent(in) :: time, prec
-      end function
+        ! TODO: Not used in this module
+        integer(C_INT) function write_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='write_xtc')
+            import
+            type(C_PTR), intent(in) :: xd
+            integer(C_INT), value, intent(in) :: NUMATOMS, STEP
+            real(C_FLOAT), intent(in) :: box(*), x(*)
+            real(C_FLOAT), value, intent(in) :: time, prec
+        end function
 
-      integer(C_INT) function xdrfile_close(xd) bind(C,name='xdrfile_close')
-        import
-        type(xdrfile), intent(in) :: xd
-      end function
+        integer(C_INT) function xdrfile_close(xd) bind(C,name='xdrfile_close')
+            import
+            type(xdrfile), intent(in) :: xd
+        end function
 
     end interface
 
