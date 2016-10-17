@@ -4,14 +4,16 @@ INCLUDE = ${DESTDIR}${PREFIX}/include
 LIBDIR = ${DESTDIR}${PREFIX}/lib
 
 all:
-	@gfortran -c src/indexfile.f90 -std=f2008 -fPIC
-	@gfortran -c src/trajectory.f90 -lxdrfile  -std=f2008 -fPIC
-	@gfortran -c src/utils.f90 -std=f2008 -fPIC
-	@gfortran -o libgmxfort.so *.o -shared -lxdrfile
+	@mkdir include lib
+	@gfortran -c src/indexfile.f90 -Jinclude -o src/indexfile.o -std=f2008 -fPIC
+	@gfortran -c src/trajectory.f90 -Jinclude -o src/trajectory.o -lxdrfile  -std=f2008 -fPIC
+	@gfortran -c src/utils.f90 -Jinclude -o src/utils.o -std=f2008 -fPIC
+	@gfortran -o lib/libgmxfort.so src/*.o -shared -lxdrfile
 
 install:
-	@install -Dm644 *.mod -t ${INCLUDE}
-	@install -Dm755 *.so -t ${LIBDIR}
+	@install -Dm644 include/* -t ${INCLUDE}
+	@install -Dm755 lib/* -t ${LIBDIR}
 
 clean:
-	@rm *.o *.mod *.so *.out
+	@rm src/*.o include/*.mod lib/*.so
+	@rmdir include lib
