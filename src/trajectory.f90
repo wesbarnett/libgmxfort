@@ -26,7 +26,7 @@ module gmxfort_trajectory
 
     type, public :: Frame
         real(C_FLOAT), allocatable :: xyz(:,:)
-        integer(C_INT) :: NATOMS, STEP, STAT
+        integer(C_INT) :: NUMATOMS, STEP, STAT
         real(C_FLOAT) :: box(3,3), prec, time
     end type
 
@@ -35,17 +35,17 @@ module gmxfort_trajectory
         type(Frame), allocatable :: frameArray(:)
         type(IndexFile) :: ndx
         integer :: NFRAMES
-        integer :: NATOMS
+        integer :: NUMATOMS
     contains
         procedure :: open => trajectory_constructor
         procedure :: read => trajectory_read
         procedure :: read_next => trajectory_read_next
         procedure :: close => trajectory_close
         procedure :: x => trajectory_get_xyz
-        procedure :: n => trajectory_get_natoms
-        procedure :: b => trajectory_get_box
-        procedure :: t => trajectory_get_time
-        procedure :: s => trajectory_get_step
+        procedure :: natoms => trajectory_get_natoms
+        procedure :: box => trajectory_get_box
+        procedure :: time => trajectory_get_time
+        procedure :: step => trajectory_get_step
     end type
 
     ! the data type located in libxdrfile
@@ -58,10 +58,10 @@ module gmxfort_trajectory
     ! interface with libxdrfile
     interface 
 
-      integer(C_INT) function read_xtc_natoms(filename,NATOMS) bind(C, name='read_xtc_natoms')
+      integer(C_INT) function read_xtc_natoms(filename,NUMATOMS) bind(C, name='read_xtc_natoms')
         import
         character(kind=C_CHAR), intent(in) :: filename
-        integer(C_INT), intent(out) :: NATOMS
+        integer(C_INT), intent(out) :: NUMATOMS
       end function
 
       type(C_PTR) function xdrfile_open(filename,mode) bind(C, name='xdrfile_open')
@@ -69,17 +69,17 @@ module gmxfort_trajectory
         character(kind=C_CHAR), intent(in) :: filename(*), mode(*)
       end function
 
-      integer(C_INT) function read_xtc(xd,NATOMS,STEP,time,box,x,prec) bind(C, name='read_xtc')
+      integer(C_INT) function read_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='read_xtc')
         import
         type(xdrfile), intent(in) :: xd
-        integer(C_INT), intent(out) :: NATOMS, STEP
+        integer(C_INT), intent(out) :: NUMATOMS, STEP
         real(C_FLOAT), intent(out) :: time, prec, box(*), x(*)
       end function
 
-      integer(C_INT) function write_xtc(xd,NATOMS,STEP,time,box,x,prec) bind(C, name='write_xtc')
+      integer(C_INT) function write_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='write_xtc')
         import
         type(C_PTR), intent(in) :: xd
-        integer(C_INT), value, intent(in) :: NATOMS, STEP
+        integer(C_INT), value, intent(in) :: NUMATOMS, STEP
         real(C_FLOAT), intent(in) :: box(*), x(*)
         real(C_FLOAT), value, intent(in) :: time, prec
       end function
@@ -123,7 +123,7 @@ contains
         filename = trim(filename_in)//C_NULL_CHAR
 
         ! Get number of atoms in system and allocate xyzition array.
-        STAT = read_xtc_natoms(filename, this%NATOMS)
+        STAT = read_xtc_natoms(filename, this%NUMATOMS)
 
         if (STAT .ne. 0) then
             write(0,*)
@@ -137,7 +137,7 @@ contains
         call c_f_pointer(xd_c, this % xd)
 
         write(0,'(a)') "Opened "//trim(filename)//" for reading."
-        write(0,'(i0,a)') this%NATOMS, " atoms present in system."
+        write(0,'(i0,a)') this%NUMATOMS, " atoms present in system."
         write(0,*)
 
     end subroutine trajectory_constructor
@@ -167,8 +167,8 @@ contains
                 allocate(this%frameArray(1))
             end if
 
-            allocate(this%frameArray(I)%xyz(3,this%NATOMS))
-            STAT = read_xtc(this%xd, this%frameArray(I)%NATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+            allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
+            STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
                 this%frameArray(I)%xyz, this%frameArray(I)%prec)
             ! C is row-major, whereas Fortran is column major. Hence the following.
             this%frameArray(I)%box = transpose(box_trans)
@@ -205,8 +205,8 @@ contains
 
         do I = 1, N
 
-            allocate(this%frameArray(I)%xyz(3,this%NATOMS))
-            STAT = read_xtc(this%xd, this%frameArray(I)%NATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+            allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
+            STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
                 this%frameArray(I)%xyz, this%frameArray(I)%prec)
             ! C is row-major, whereas Fortran is column major. Hence the following.
             this%frameArray(I)%box = transpose(box_trans)
@@ -259,7 +259,7 @@ contains
         if (present(group)) then
             trajectory_get_natoms = this%ndx%get_natoms(group)
         else
-            trajectory_get_natoms = this%NATOMS
+            trajectory_get_natoms = this%NUMATOMS
         end if
 
     end function trajectory_get_natoms

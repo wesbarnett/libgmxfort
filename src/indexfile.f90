@@ -24,7 +24,7 @@ module gmxfort_index
 
     type ndxgroups
         integer, allocatable :: LOC(:)
-        integer :: NATOMS
+        integer :: NUMATOMS
         character (len=:), allocatable :: title
     end type ndxgroups
 
@@ -128,7 +128,7 @@ contains
                 TMP = minloc(INDICES_TMP)
                 allocate(this%group(I)%LOC(TMP(1)-1))
                 this%group(I)%LOC = INDICES_TMP(1:TMP(1)-1)
-                this%group(I)%NATOMS = TMP(1)-1
+                this%group(I)%NUMATOMS = TMP(1)-1
                 deallocate(TMP)
             else
                 this%group(I)%LOC = INDICES_TMP
@@ -176,7 +176,7 @@ contains
 
             if (this%group(J)%title .eq. group_name) then
 
-                indexfile_get_natoms = this%group(J)%NATOMS
+                indexfile_get_natoms = this%group(J)%NUMATOMS
                 return
 
             end if

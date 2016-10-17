@@ -71,32 +71,32 @@ file. Additionally you can always get the number of frames stored in a
 
     trj%nframes
 
-You can also get the number of atoms with the `n` method:
+You can also get the number of atoms with the `natoms` method:
 
-    trj%n
+    trj%natoms
 
 If you want to know how many atoms are in an index group include the group name
 as an argument. In this example the group name is "C":
 
-    trj%n("C")
+    trj%natoms("C")
 
-To get the box coordinates, use `b`. The following get the box of the `2`nd
+To get the box coordinates, use `box`. The following gets the box of the `2`nd
 frame:
 
     real :: mybox(3,3)
-    mybox = trj%b(2)
+    mybox = trj%box(2)
 
 You can also get the simulation time and step corresponding with a frame you
-read in, using `t` and `s`, respectively. The following get the time associated
+read in, using `time` and `step`, respectively. The following get the time associated
 with the first frame read in:
 
     real :: mytime
-    mytime = trj%t(1)
+    mytime = trj%time(1)
 
 And now the step for the same:
 
     integer :: mystep
-    mystep = trj%s(1)
+    mystep = trj%step(1)
 
 Finally, when done with the `Trajectory` object, you can close the file:
 
