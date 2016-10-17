@@ -10,6 +10,7 @@ program test
     !call trj%read()
 
     call ndx%read("index.ndx")
+    print *, ndx%get("HW2",2)
 
     !do I=1, trj%NFRAMES
     !    print *, trj%frameArray(I)%box(:,:)

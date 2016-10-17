@@ -1,0 +1,131 @@
+module gmxfort_utils
+
+    implicit none
+    private
+    public pbc, cross, distance, distance2, bond_vector, magnitude, bond_angle, dihedral_angle
+ 
+contains
+
+    function pbc(a, box)
+
+        real(8), intent(in) :: a(3)
+        real(8), intent(in) :: box(3,3)
+        real(8) :: pbc(3)
+        integer :: shift
+
+        pbc = a
+
+        shift = nint(a(3) / box(3,3))
+        if (shift .ne. 0) then
+            pbc(3) = a(3) - box(3,3) * shift
+            pbc(2) = a(2) - box(3,2) * shift
+            pbc(1) = a(1) - box(3,1) * shift
+        end if
+
+        shift = nint(a(2) / box(2,2))
+        if (shift .ne. 0) then
+            pbc(2) = a(2) - box(2,2) * shift
+            pbc(1) = a(1) - box(2,1) * shift
+        end if
+
+        shift = nint(a(1) / box(1,1))
+        if (shift .ne. 0) then
+            pbc(1) = a(1) - box(1,1) * shift
+        end if
+
+    end function pbc
+
+
+    function cross(a, b)
+
+        real(8) :: cross(3)
+        real(8), intent(in), dimension(3) :: a, b
+
+        cross(1) = a(2) * b(3) - a(3) * b(2)
+        cross(2) = a(3) * b(1) - a(1) * b(3)
+        cross(3) = a(1) * b(2) - a(2) * b(1)
+
+    end function cross
+
+
+    function distance2(a, b, box)
+
+        real(8) :: distance2
+        real(8), intent(in), dimension(3) :: a, b
+        real(8) :: c(3)
+        real(8), intent(in) :: box(3,3)
+
+        c = pbc(a - b, box)
+        distance2 = dot_product(c, c)
+
+    end function distance2
+
+
+    function distance(a, b, box)
+
+        real(8) :: distance
+        real(8), intent(in), dimension(3) :: a, b
+        real(8), intent(in) :: box(3,3)
+        distance = dsqrt(distance2(a, b, box))
+
+    end function distance
+
+    function bond_vector(a, b, box)
+
+        real(8) :: bond_vector(3)
+        real(8), intent(in), dimension(3) :: a, b
+        real(8), intent(in) :: box(3,3)
+
+        bond_vector = pbc(a-b, box)
+
+    end function bond_vector
+
+
+    function magnitude(a)
+
+        real(8) :: magnitude
+        real(8), intent(in) :: a(3)
+
+        magnitude = dsqrt(dot_product(a, a))
+
+    end function magnitude
+
+
+    function bond_angle(a, b, c, box)
+
+        real(8) :: bond_angle
+        real(8), intent(in), dimension(3) :: a, b, c
+        real(8), intent(in) :: box(3,3)
+        real(8), dimension(3) :: bond1, bond2
+
+        bond1 = bond_vector(b, a, box)
+        bond2 = bond_vector(b, c, box)
+
+        bond_angle = dacos(dot_product(bond1, bond2)/(magnitude(bond1)*magnitude(bond2)))
+
+    end function bond_angle
+
+
+    function dihedral_angle(i, j, k, l, box)
+
+        real(8) :: dihedral_angle
+        real(8), intent(in), dimension(3) :: i, j, k, l
+        real(8), intent(in), dimension(3,3) :: box
+        real(8) :: A_mag, B_mag, G_mag
+        real(8), dimension(3) :: H, G, F, A, B, cross_BA
+
+        H = bond_vector(k, l, box)
+        G = bond_vector(k, j, box)
+        F = bond_vector(j, i, box)
+        A = cross(F, G)
+        B = cross(H, G)
+        cross_BA = cross(B, A)
+        A_mag = magnitude(A)
+        B_mag = magnitude(B)
+        G_mag = magnitude(G)
+
+        dihedral_angle = atan2(dot_product(cross_BA, G) / (A_mag*B_mag*G_mag), dot_product(A, B) / (A_mag*B_mag))
+
+    end function dihedral_angle
+
+end module gmxfort_utils

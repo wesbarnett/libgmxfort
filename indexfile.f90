@@ -5,18 +5,22 @@ module gmxfort_index
 
     type ndxgroups
         integer, allocatable :: LOC(:)
+        integer :: NATOMS
         character (len=:), allocatable :: title
     end type ndxgroups
 
     type, public :: IndexFile
         type (ndxgroups), allocatable :: group(:)
     contains
-         procedure :: read => indexfile_read
+        procedure :: read => indexfile_read
+        procedure :: get => indexfile_get
+        procedure :: get_natoms => indexfile_get_natoms
     end type IndexFile
  
 contains
 
     subroutine indexfile_read(this, filename)
+        implicit none
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
@@ -105,6 +109,7 @@ contains
                 TMP = minloc(INDICES_TMP)
                 allocate(this%group(I)%LOC(TMP(1)-1))
                 this%group(I)%LOC = INDICES_TMP(1:TMP(1)-1)
+                this%group(I)%NATOMS = TMP(1)-1
                 deallocate(TMP)
             else
                 this%group(I)%LOC = INDICES_TMP
@@ -114,6 +119,56 @@ contains
         close(INDEX_FILE_UNIT)
         
     end subroutine indexfile_read
+
+    function indexfile_get(this, group_name, I)
+
+        implicit none
+        integer :: indexfile_get
+        class(IndexFile), intent(inout) :: this
+        character (len=*), intent(in) :: group_name
+        integer, intent(in) :: I
+        integer :: J
+
+        do J = 1, size(this%group)
+
+            if (this%group(J)%title .eq. group_name) then
+
+                indexfile_get = this%group(J)%LOC(I)
+                return
+
+            end if
+
+        end do
+
+        write(0, '(a)') "ERROR: "//trim(group_name)//" is not in index file."
+        stop
+
+    end function indexfile_get
+
+    function indexfile_get_natoms(this, group_name)
+
+        implicit none
+        integer indexfile_get_natoms
+        class(IndexFile), intent(inout) :: this
+        character (len=*) :: group_name
+        integer :: J
+
+        do J = 1, size(this%group)
+
+            if (this%group(J)%title .eq. group_name) then
+
+                indexfile_get_natoms = this%group(J)%NATOMS
+                return
+
+            end if
+
+        end do
+
+        write(0, '(a)') "ERROR: "//trim(group_name)//" is not in index file."
+        stop
+        
+
+    end function indexfile_get_natoms
 
 end module gmxfort_index
 
