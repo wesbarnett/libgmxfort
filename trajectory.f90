@@ -37,9 +37,11 @@ module gmxfort_trajectory
     contains
         procedure :: open => trajectory_constructor
         procedure :: read => trajectory_read
+        procedure :: read_next => trajectory_read_next
         procedure :: close => trajectory_close
         procedure :: x => trajectory_get_xyz
         procedure :: n => trajectory_get_natoms
+        procedure :: b => trajectory_get_box
     end type
 
     ! the data type located in libxdrfile
@@ -130,8 +132,8 @@ contains
         xd_c = xdrfile_open(filename,"r")
         call c_f_pointer(xd_c, this % xd)
 
-        write(0,'(a)') " Opened "//trim(filename)//" for reading."
-        write(0,'(a,i0,a)') " ", this % NATOMS, " atoms present in system."
+        write(0,'(a)') "Opened "//trim(filename)//" for reading."
+        write(0,'(i0,a)') this%NATOMS, " atoms present in system."
         write(0,*)
 
     end subroutine trajectory_constructor
@@ -148,7 +150,9 @@ contains
         do while (STAT .eq. 0)
 
             I = I + 1
-            write(0,'(a,i0)') "Frame: ", I
+            if (modulo(I, 10) .eq. 0) then
+                write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
+            end if
 
             if (allocated(this%frameArray)) then
                 allocate(tmpFrameArray(size(this%frameArray)+1))
@@ -170,6 +174,49 @@ contains
         this%NFRAMES = I-1
 
     end subroutine trajectory_read
+
+    function trajectory_read_next(this, F)
+
+        implicit none
+        integer :: trajectory_read_next
+        class(Trajectory), intent(inout) :: this
+        integer, intent(in), optional :: F
+        integer :: N
+        type(Frame), allocatable :: tmpFrameArray(:)
+        real :: box_trans(3,3)
+        integer :: STAT = 0
+        integer :: I
+
+        if (present(F)) then
+            N = F
+        else
+            N = 1
+        end if
+
+        if (allocated(this%frameArray)) then
+            deallocate(this%frameArray)
+        end if
+        allocate(this%frameArray(N))
+
+
+        do I = 1, N
+
+            allocate(this%frameArray(I)%xyz(3,this%NATOMS))
+            STAT = read_xtc(this%xd, this%frameArray(I)%NATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+                this%frameArray(I)%xyz, this%frameArray(I)%prec)
+            ! C is row-major, whereas Fortran is column major. Hence the following.
+            this%frameArray(I)%box = transpose(box_trans)
+
+            if (STAT .ne. 0) then
+                exit
+            end if
+
+        end do
+
+        this%NFRAMES = I-1
+        trajectory_read_next = this%NFRAMES
+
+    end function trajectory_read_next
 
     subroutine trajectory_close(this)
 
@@ -212,6 +259,17 @@ contains
         end if
 
     end function trajectory_get_natoms
+
+    function trajectory_get_box(this, frame)
+
+        implicit none
+        real(8) :: trajectory_get_box(3,3)
+        class(Trajectory), intent(in) :: this
+        integer, intent(in) :: frame
+
+        trajectory_get_box = this%frameArray(frame)%box
+
+    end function trajectory_get_box
 
 end module gmxfort_trajectory
 

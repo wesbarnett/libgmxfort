@@ -6,11 +6,11 @@ program test
     type(Trajectory) :: trj
 
     call trj%open("traj.xtc", "index.ndx")
-    call trj%read()
-    call trj%close()
 
-    do I=1, trj%NFRAMES
-        print *, trj%x(I,1,"HW2")
+    do while (trj%read_next() .ne. 0)
+        print *, trj%x(1,1,"HW2")
     end do
+
+    call trj%close()
 
 end program test
