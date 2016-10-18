@@ -42,6 +42,19 @@ once:
 
     call trj%read()
 
+Note that memory is allocated in chunks during this read process in order to
+save time. By default enough memory is allocated for 1000 frames at one time.
+Allocating enough memory for only one frame at a time and then moving the
+allocation is very slow. You can change the size of each allocation by passing
+it as an argument. For example, to allocated in 10,000 frame chunks you would
+do:
+
+    call trj%read(10000)
+
+This still reads in all frames, not just the first 10,000. This just helps with
+managing the memory. A larger number means less allocation moves, but more
+memory is needed.
+
 Now every atom's coordinates are accessible via `x`. For exmaple, to get the
 coordinates of the first atom in the first frame you would do the following. The
 frame is the first argument and the atom number is the second argument. 
