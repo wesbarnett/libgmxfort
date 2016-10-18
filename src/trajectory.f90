@@ -152,6 +152,7 @@ contains
         real :: box_trans(3,3)
         integer :: STAT = 0
         integer :: I = 0
+        integer, parameter :: CHUNK = 1000
 
         do while (STAT .eq. 0)
 
@@ -160,13 +161,13 @@ contains
                 write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
             end if
 
-            if (allocated(this%frameArray)) then
-                allocate(tmpFrameArray(size(this%frameArray)+1))
+            if (allocated(this%frameArray) .and. mod(I,CHUNK) .eq. 0) then
+                allocate(tmpFrameArray(size(this%frameArray)+CHUNK))
                 tmpFrameArray(1:size(this%frameArray)) = this%frameArray
                 deallocate(this%frameArray)
                 call move_alloc(tmpFrameArray, this%frameArray)
-            else
-                allocate(this%frameArray(1))
+            else if (.not. allocated(this%frameArray)) then
+                allocate(this%frameArray(CHUNK-1))
             end if
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
@@ -179,6 +180,7 @@ contains
 
         this%NFRAMES = I-1
         allocate(tmpFrameArray(this%NFRAMES))
+        deallocate(this%frameArray(I)%xyz)
         tmpFrameArray = this%frameArray(1:this%NFRAMES)
         deallocate(this%frameArray)
         call move_alloc(tmpFrameArray, this%frameArray)
