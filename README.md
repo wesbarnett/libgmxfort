@@ -73,7 +73,7 @@ file. Additionally you can always get the number of frames stored in a
 
 You can also get the number of atoms with the `natoms` method:
 
-    trj%natoms
+    trj%natoms()
 
 If you want to know how many atoms are in an index group include the group name
 as an argument. In this example the group name is "C":
