@@ -208,7 +208,6 @@ contains
         end if
         allocate(this%frameArray(N))
 
-
         do I = 1, N
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
@@ -225,6 +224,13 @@ contains
 
         this%NFRAMES = I-1
         trajectory_read_next = this%NFRAMES
+
+        if (this%NFRAMES .ne. N) then
+            allocate(tmpFrameArray(this%NFRAMES))
+            tmpFrameArray = this%frameArray(1:this%NFRAMES)
+            deallocate(this%frameArray)
+            call move_alloc(tmpFrameArray, this%frameArray)
+        end if
 
     end function trajectory_read_next
 
