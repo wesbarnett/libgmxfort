@@ -23,6 +23,7 @@ module gmxfort_trajectory
 
     implicit none
     private
+    public xdrfile_open, write_xtc, xdrfile_close
 
     type :: Frame
         real(C_FLOAT), allocatable :: xyz(:,:)
@@ -49,7 +50,7 @@ module gmxfort_trajectory
     end type
 
     ! the data type located in libxdrfile
-    type, bind(C) :: xdrfile
+    type, public, bind(C) :: xdrfile
         type(C_PTR) :: fp, xdr
         character(kind=C_CHAR) :: mode
         integer(C_INT) :: buf1, buf1size, buf2, buf2size
@@ -80,7 +81,7 @@ module gmxfort_trajectory
         ! TODO: Not used in this module
         integer(C_INT) function write_xtc(xd,NUMATOMS,STEP,time,box,x,prec) bind(C, name='write_xtc')
             import
-            type(C_PTR), intent(in) :: xd
+            type(xdrfile), intent(in) :: xd
             integer(C_INT), value, intent(in) :: NUMATOMS, STEP
             real(C_FLOAT), intent(in) :: box(*), x(*)
             real(C_FLOAT), value, intent(in) :: time, prec
