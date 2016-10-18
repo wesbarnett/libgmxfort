@@ -4,7 +4,7 @@ INCLUDE = ${DESTDIR}${PREFIX}/include
 LIBDIR = ${DESTDIR}${PREFIX}/lib
 
 all:
-	@mkdir include lib
+	@mkdir -p include lib
 	@gfortran -c src/indexfile.f90 -Jinclude -o src/indexfile.o -std=f2008 -fPIC
 	@gfortran -c src/trajectory.f90 -Jinclude -o src/trajectory.o -lxdrfile  -std=f2008 -fPIC
 	@gfortran -c src/utils.f90 -Jinclude -o src/utils.o -std=f2008 -fPIC
