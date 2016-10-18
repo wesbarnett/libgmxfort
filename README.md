@@ -31,16 +31,16 @@ First, always construct a `Trajectory` object:
 
 Then open the file:
 
-    trj%open("traj.xtc")
+    call trj%open("traj.xtc")
 
 If you have a corresponding index file you would do this instead:
 
-    trj%open("traj.xtc", "index.ndx")
+    call trj%open("traj.xtc", "index.ndx")
 
 After opening you can now read the xtc file in. Here's how to read it in all at
 once:
 
-    trj%read()
+    call trj%read()
 
 Now every atom's coordinates are accessible via `x`. For exmaple, to get the
 coordinates of the first atom in the first frame you would do the following. The
@@ -100,7 +100,7 @@ And now the step for the same:
 
 Finally, when done with the `Trajectory` object, you can close the file:
 
-    trj%close()
+    call trj%close()
 
 There are several functions and subroutines in the `gmxfort_utils` module,
 including periodic boundary and distance calculations. Check out the source file
