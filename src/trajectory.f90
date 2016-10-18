@@ -178,6 +178,10 @@ contains
         end do
 
         this%NFRAMES = I-1
+        allocate(tmpFrameArray(this%NFRAMES))
+        tmpFrameArray = this%frameArray(1:this%NFRAMES)
+        deallocate(this%frameArray)
+        call move_alloc(tmpFrameArray, this%frameArray)
 
     end subroutine trajectory_read
 
