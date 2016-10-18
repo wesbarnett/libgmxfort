@@ -144,7 +144,7 @@ contains
 
     end subroutine trajectory_constructor
 
-    subroutine trajectory_read(this)
+    subroutine trajectory_read(this, N)
 
         implicit none
         class(Trajectory), intent(inout) :: this
@@ -152,7 +152,14 @@ contains
         real :: box_trans(3,3)
         integer :: STAT = 0
         integer :: I = 0
-        integer, parameter :: CHUNK = 1000
+        integer :: CHUNK
+        integer, intent(in), optional :: N
+
+        if (present(N) .and. N .gt. 0) then
+            CHUNK = N
+        else
+            CHUNK = 1000
+        end if
 
         do while (STAT .eq. 0)
 
@@ -167,7 +174,11 @@ contains
                 deallocate(this%frameArray)
                 call move_alloc(tmpFrameArray, this%frameArray)
             else if (.not. allocated(this%frameArray)) then
-                allocate(this%frameArray(CHUNK-1))
+                if (CHUNK .gt. 1) then
+                    allocate(this%frameArray(CHUNK-1))
+                else
+                    allocate(this%frameArray(1))
+                end if
             end if
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
