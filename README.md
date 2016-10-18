@@ -111,7 +111,7 @@ And now the step for the same:
     integer :: mystep
     mystep = trj%step(1)
 
-Finally, when done with the `Trajectory` object, you can close the file:
+Finally, when done with the reading in from the xtc file, you can close the file:
 
     call trj%close()
 
