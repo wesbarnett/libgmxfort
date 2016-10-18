@@ -15,7 +15,7 @@ xdrfile is required.
 ## Usage
 
 Compile your program with `-lgmxfort`. You may also need to use `-I` to point to
-where the modules files are (by default at `/usr/include`.
+where the modules files are (by default at `/usr/include`).
 
 To use the library always put `use gmxfort_trajectory` for using the
 `Trajectory` class and `use gmxfort_utils` for using any of the other utilities.
