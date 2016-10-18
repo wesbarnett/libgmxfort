@@ -43,10 +43,8 @@ contains
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        character :: firstchar
         integer :: INDEX_FILE_UNIT
         integer :: IO_STATUS
-        integer :: IO_STATUS_INDICE
         integer :: LEFTBRACKET_INDEX
         integer :: RIGHTBRACKET_INDEX
         integer :: NGRPS = 0
