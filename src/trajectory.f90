@@ -274,14 +274,14 @@ contains
             atom_tmp = this%ndx%get(group, atom)
             if (atom_tmp > this%natoms() .or. atom_tmp < 1) then
                 write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
-                    this%natoms(), ". Note that Fortran uses 1-based arrays."
+                    this%natoms(), ". Note that Fortran uses one-based indexing."
                 stop 1
             end if
             trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
         else
             if (atom > this%natoms() .or. atom < 1) then
                 write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom, " when there are ", &
-                    this%natoms(), ". Note that Fortran uses 1-based arrays."
+                    this%natoms(), ". Note that Fortran uses one-based indexing."
                 stop 1
             end if
             trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom)
@@ -348,7 +348,7 @@ contains
 
         if (frame > this%NFRAMES .or. frame < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access frame number ", frame, " when there are ", &
-                this%NFRAMES, ". Note that Fortran uses 1-based arrays."
+                this%NFRAMES, ". Note that Fortran uses one-based indexing."
             stop 1
         end if
 
