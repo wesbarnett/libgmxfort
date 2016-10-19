@@ -11,12 +11,11 @@ program angles
     character (len=*), parameter :: index_grp = "Site"
 
     type(Trajectory) :: trj
-    integer :: I, J, K, U
+    integer :: I, J, U
     integer :: NSITES
     integer :: NANGLES
-    integer :: NCOMP
+    character (len=10) :: nchar
     real(8), allocatable :: ang(:)
-    real(8), allocatable :: indata(:)
     real(8), dimension(3) :: a, b, c, d
     real(8) :: box(3,3)
 
@@ -24,11 +23,12 @@ program angles
     call trj%read()
     call trj%close()
 
-    NSITES = trj%n(index_grp)
+    NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
 
+    write(nchar,"(i0)") NANGLES
+
     allocate(ang(NANGLES))
-    allocate(indata(NCOMP))
 
     open(newunit=U, file="angles.dat")
 
@@ -40,11 +40,12 @@ program angles
             b = trj%x(I, J+1, index_grp)
             c = trj%x(I, J+2, index_grp)
             d = trj%x(I, J+3, index_grp)
-            ang(J) = dihedral_angle(a, b, c, d, trj%b(I))
+            box = trj%box(I)
+            ang(J) = dihedral_angle(a, b, c, d, box)
 
         end do
 
-        write(U, *) ang
+        write(U, "("//trim(nchar)//"f12.6)") ang
 
     end do
 
