@@ -264,12 +264,26 @@ contains
         real :: trajectory_get_xyz(3)
         integer, intent(in) :: frame
         integer, intent(in) :: atom
+        integer :: atom_tmp
         class(Trajectory), intent(inout) :: this
         character (len=*), intent(in), optional :: group
 
+        call trajectory_check_frame(this, frame)
+
         if (present(group)) then
-            trajectory_get_xyz = this%frameArray(frame)%xyz(:,this%ndx%get(group,atom))
+            atom_tmp = this%ndx%get(group, atom)
+            if (atom_tmp > this%natoms() .or. atom_tmp < 1) then
+                write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
+                    this%natoms(), ". Note that Fortran uses 1-based arrays."
+                stop 1
+            end if
+            trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
         else
+            if (atom > this%natoms() .or. atom < 1) then
+                write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom, " when there are ", &
+                    this%natoms(), ". Note that Fortran uses 1-based arrays."
+                stop 1
+            end if
             trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom)
         end if
 
@@ -297,6 +311,7 @@ contains
         class(Trajectory), intent(in) :: this
         integer, intent(in) :: frame
 
+        call trajectory_check_frame(this, frame)
         trajectory_get_box = this%frameArray(frame)%box
 
     end function trajectory_get_box
@@ -308,6 +323,7 @@ contains
         class(Trajectory), intent(in) :: this
         integer, intent(in) :: frame
 
+        call trajectory_check_frame(this, frame)
         trajectory_get_time = this%frameArray(frame)%time
 
     end function trajectory_get_time
@@ -319,9 +335,24 @@ contains
         class(Trajectory), intent(in) :: this
         integer, intent(in) :: frame
 
+        call trajectory_check_frame(this, frame)
         trajectory_get_step = this%frameArray(frame)%step
 
     end function trajectory_get_step
+
+    subroutine trajectory_check_frame(this, frame)
+
+        implicit none
+        class(Trajectory), intent(in) :: this
+        integer, intent(in) :: frame
+
+        if (frame > this%NFRAMES .or. frame < 1) then
+            write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access frame number ", frame, " when there are ", &
+                this%NFRAMES, ". Note that Fortran uses 1-based arrays."
+            stop 1
+        end if
+
+    end subroutine trajectory_check_frame
 
 end module gmxfort_trajectory
 
