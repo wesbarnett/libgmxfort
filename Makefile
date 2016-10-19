@@ -2,6 +2,7 @@
 PREFIX ?= /usr
 INCLUDE = ${DESTDIR}${PREFIX}/include
 LIBDIR = ${DESTDIR}${PREFIX}/lib
+LICDIR = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 
 all:
 	@mkdir -p include lib
@@ -17,6 +18,7 @@ test:
 install:
 	@install -Dm644 include/* -t ${INCLUDE}
 	@install -Dm755 lib/* -t ${LIBDIR}
+	@install -Dm644 LICENSE  -t ${LICDIR}
 
 clean:
 	@rm src/*.o include/*.mod lib/*.so tests/*.mod tests/test
