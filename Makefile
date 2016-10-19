@@ -19,5 +19,5 @@ install:
 	@install -Dm755 lib/* -t ${LIBDIR}
 
 clean:
-	@rm src/*.o include/*.mod lib/*.so tests/*.o tests/*.mod tests/test
+	@rm src/*.o include/*.mod lib/*.so tests/*.mod tests/test
 	@rmdir include lib
