@@ -83,6 +83,9 @@ contains
 
         end do
 
+        if (allocated(this%group)) then
+            deallocate(this%group)
+        end if
         allocate(this%group(NGRPS))
         allocate(TITLE_LOC(NGRPS+1)) ! Add one to include end of file
 
