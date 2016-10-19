@@ -12,7 +12,7 @@ all:
 	@gfortran -o lib/libgmxfort.so src/*.o -shared -lxdrfile -Wall
 
 test:
-	@gfortran tests/test.f90 -o tests/test -Iinclude -Llib -lgmxfort -Jtests
+	@gfortran tests/test.f90 -o tests/test -Iinclude -Jtests lib/libgmxfort.so
 	@./tests/test
 
 install:
