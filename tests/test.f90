@@ -68,6 +68,7 @@ end module subs
 program test
 
     use gmxfort_trajectory
+    use gmxfort_utils
     use subs
 
     implicit none
@@ -126,6 +127,14 @@ program test
     call check_int(a, ans_val, passed, total) 
 
     call trj%close()
+
+    x = [5.5, 5.5, 3.5]
+    box = reshape((/5.0, 0.0, 0.0, &
+                    0.0, 5.0, 0.0, &
+                    2.5, 2.5, 3.5/), shape(box))
+    x = pbc(dble(x), dble(box))
+    ans = [-2.000, -2.000, 0.000]
+    call check_array(x, ans, passed, total) 
 
     write(0,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
 

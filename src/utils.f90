@@ -33,22 +33,22 @@ contains
 
         pbc = a
 
-        shift = nint(a(3) / box(3,3))
+        shift = nint(pbc(3) / box(3,3))
         if (shift .ne. 0) then
-            pbc(3) = a(3) - box(3,3) * shift
-            pbc(2) = a(2) - box(2,3) * shift
-            pbc(1) = a(1) - box(1,3) * shift
+            pbc(3) = pbc(3) - box(3,3) * shift
+            pbc(2) = pbc(2) - box(2,3) * shift
+            pbc(1) = pbc(1) - box(1,3) * shift
         end if
 
-        shift = nint(a(2) / box(2,2))
+        shift = nint(pbc(2) / box(2,2))
         if (shift .ne. 0) then
-            pbc(2) = a(2) - box(2,2) * shift
-            pbc(1) = a(1) - box(1,2) * shift
+            pbc(2) = pbc(2) - box(2,2) * shift
+            pbc(1) = pbc(1) - box(1,2) * shift
         end if
 
-        shift = nint(a(1) / box(1,1))
+        shift = nint(pbc(1) / box(1,1))
         if (shift .ne. 0) then
-            pbc(1) = a(1) - box(1,1) * shift
+            pbc(1) = pbc(1) - box(1,1) * shift
         end if
 
     end function pbc
