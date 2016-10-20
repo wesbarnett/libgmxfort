@@ -25,8 +25,8 @@ Typically you will open a trajectory file (and optionally a corresponding index
 file). Then you will read in the entire trajectory file at once, or you can read
 it in in chunks. Then you should close the trajectory file when done.
 
-The simplest way to use this library is to construct a `Trajectory` object, open
-an xtc file, read in all the data at once, and then close it:
+The simplest way to use this library is to construct a `Trajectory` object and
+then use the `read()` method:
 
 ```fortran
     use gmxfort_trajectory
@@ -35,19 +35,18 @@ an xtc file, read in all the data at once, and then close it:
 
     type(Trajectory) :: trj
 
-    call trj%open("traj.xtc")
-    call trj%read()
-    call trj%close()
+    call trj%read("traj.xtc")
 ```
 
-The `trj` object in this example now stores all of the coordinates and
+The `read()` method opens the xtc file, reads in all information, and then
+closes it. The `trj` object in this example now stores all of the coordinates and
 information from the .xtc file.
 
 If you have a corresponding index file you would add a second argument to
 `open`:
 
 ```fortran
-    call trj%open("traj.xtc", "index.ndx")
+    call trj%read("traj.xtc", "index.ndx")
 ```
 
 Note that memory is allocated in chunks during this `read()` process in order to
@@ -58,7 +57,7 @@ it as an argument. For example, to allocate enough memory for 10,000 frame
 chunks you would do:
 
 ```fortran
-    call trj%read(10000)
+    call trj%read("traj.xtc", "index.ndx", 10000)
 ```
 
 This still reads in all frames, not just the first 10,000. This just helps with
@@ -66,10 +65,13 @@ managing the memory. A larger number means less allocation moves, but more
 memory is needed.
 
 If you want to read in the trajectory file in frame-by-frame use `read_next()`
-instead of `read()`. By default it reads in one frame:
+instead of `read()`. To use this, you must additionally open and close the xtc
+file on your own. By default it reads in one frame:
 
 ```fortran
+    trj%open("traj.xtc", "index.ndx")
     trj%read_next()
+    trj%close()
 ```
 
 To read in more than one, specify an argument. The following reads in 10 frames:
@@ -90,7 +92,7 @@ example:
     type(Trajectory) :: trj
     integer :: i, n
 
-    call trj%open("traj.xtc")
+    call trj%open("traj.xtc", "index.ndx")
 
     n = trj%read_next(10)
     do while (n > 0)

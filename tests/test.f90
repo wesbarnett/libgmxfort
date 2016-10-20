@@ -100,9 +100,7 @@ program test
     real :: x(3), y(3), z(3), w(3), ans(3), box(3,3), ans_box(3,3), b, c
     integer :: passed = 0, total = 0, a, ans_val
 
-    call trj%open(xtcfile, ndxfile)
-    call trj%read()
-    call trj%close()
+    call trj%read(xtcfile, ndxfile)
 
     ! TEST 1
     x = trj%x(1, 1)

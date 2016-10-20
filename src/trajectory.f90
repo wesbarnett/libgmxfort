@@ -38,7 +38,7 @@ module gmxfort_trajectory
         integer :: NFRAMES
         integer :: NUMATOMS
     contains
-        procedure :: open => trajectory_constructor
+        procedure :: open => trajectory_open
         procedure :: read => trajectory_read
         procedure :: read_next => trajectory_read_next
         procedure :: close => trajectory_close
@@ -96,7 +96,7 @@ module gmxfort_trajectory
 
 contains
 
-    subroutine trajectory_constructor(this, filename_in, ndxfile)
+    subroutine trajectory_open(this, filename_in, ndxfile)
 
         use, intrinsic :: iso_c_binding, only: C_NULL_CHAR, C_CHAR, c_f_pointer
 
@@ -143,18 +143,26 @@ contains
         write(0,'(i0,a)') this%NUMATOMS, " atoms present in system."
         write(0,*)
 
-    end subroutine trajectory_constructor
+    end subroutine trajectory_open
 
-    subroutine trajectory_read(this, N)
+    subroutine trajectory_read(this, xtcfile, ndxfile, N)
 
         implicit none
         class(Trajectory), intent(inout) :: this
+        character (len=*) :: xtcfile
+        character (len=*), optional :: ndxfile
         type(Frame), allocatable :: tmpFrameArray(:)
         real :: box_trans(3,3)
         integer :: STAT = 0
         integer :: I = 0
         integer :: CHUNK
         integer, intent(in), optional :: N
+
+        if (present(ndxfile)) then
+            call this%open(xtcfile, ndxfile)
+        else
+            call this%open(xtcfile)
+        end if
 
         if (present(N) .and. N .gt. 0) then
             CHUNK = N
@@ -196,6 +204,8 @@ contains
         tmpFrameArray = this%frameArray(1:this%NFRAMES)
         deallocate(this%frameArray)
         call move_alloc(tmpFrameArray, this%frameArray)
+
+        call this%close()
 
     end subroutine trajectory_read
 
