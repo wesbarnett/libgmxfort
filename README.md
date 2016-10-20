@@ -25,95 +25,146 @@ Typically you will open a trajectory file (and optionally a corresponding index
 file). Then you will read in the entire trajectory file at once, or you can read
 it in in chunks. Then you should close the trajectory file when done.
 
-First, always construct a `Trajectory` object:
+The simplest way to use this library is to construct a `Trajectory` object, open
+an xtc file, read in all the data at once, and then close it:
+
+```fortran
+    using gmxfort_trajectory
+
+    implicit none
 
     type(Trajectory) :: trj
 
-Then open the file:
-
     call trj%open("traj.xtc")
-
-If you have a corresponding index file you would do this instead:
-
-    call trj%open("traj.xtc", "index.ndx")
-
-After opening you can now read the xtc file in. Here's how to read it in all at
-once:
-
     call trj%read()
+    call trj%close()
+```
 
-Note that memory is allocated in chunks during this read process in order to
+If you have a corresponding index file you would add a second argument to
+`open`:
+
+```fortran
+    call trj%open("traj.xtc", "index.ndx")
+```
+
+Note that memory is allocated in chunks during this `read` process in order to
 save time. By default enough memory is allocated for 1000 frames at one time.
 Allocating enough memory for only one frame at a time and then moving the
 allocation is very slow. You can change the size of each allocation by passing
 it as an argument. For example, to allocated in 10,000 frame chunks you would
 do:
 
+```fortran
     call trj%read(10000)
+```
 
 This still reads in all frames, not just the first 10,000. This just helps with
 managing the memory. A larger number means less allocation moves, but more
 memory is needed.
 
-Now every atom's coordinates are accessible via `x`. For exmaple, to get the
-coordinates of the first atom in the first frame you would do the following. The
-frame is the first argument and the atom number is the second argument. 
+If you want to read in the trajectory file in frame-by-frame use `read_next()`
+instead of `read()`. By default it reads in one frame:
 
+```fortran
+    trj%read_next()
+```
+
+To read in more than one, specify an argument. The following reads in 10 frames:
+
+```fortran
+    trj%read_next(10)
+```
+
+`read_next()` returns the number of frames actually read in. It is a function,
+and not a subroutine. This is useful for using it with a `do while` loop. For
+example:
+
+```fortran
+    using gmxfort_trajectory
+
+    implicit none
+
+    type(Trajectory) :: trj
+    integer :: i, n
+
+    call trj%open("traj.xtc")
+
+    n = trj%read_next(10)
+    do while (n > 0)
+        do i = 1, n
+            ! do some things with the frames read in
+        end do
+    end do
+
+    call trj%close()
+```
+
+After calling `read()` or `read_next()` every atom's coordinates are accessible
+via `x`. For exmaple, to get the coordinates of the first atom in the first
+frame you would do the following. The frame is the first argument and the atom
+number is the second argument. 
+
+```fortran
     real :: myatom(3)
+    ...
     myatom = trj%x(1, 1)
+```
 
 If you read in an index file, you can get atom coordinates in relationship to
 that. The following gets the fifth atom in index group `C` in the `10`th frame:
 
+```fortran
     myatom = trj%x(10, 5, "C")
-
-If you want to read in the trajectory file in chunks use `read_next`. By default
-it reads in one frame:
-
-    trj%read_next()
-
-To read in more than one, specify an argument. The following reads in 10 frames:
-
-    trj%read_next(10)
+```
 
 Note that when you access `x` you will still have to give it the frame number as
-the first argument, even if you only read in one frame. `read_next` actually
-returns the number of frames read in. This is useful when near the end of the
-file. Additionally you can always get the number of frames stored in a
-`Trajectory` object with the `nframes` member:
+the first argument even if you only read in one frame with `read_next`.
+You can always get the number of frames stored in a `Trajectory`
+object with the `nframes` member:
 
+```fortran
     trj%nframes
+```
 
 You can also get the number of atoms with the `natoms` method:
 
+```fortran
     trj%natoms()
+```
 
 If you want to know how many atoms are in an index group include the group name
 as an argument. In this example the group name is "C":
 
+```fortran
     trj%natoms("C")
+```
 
 To get the box coordinates, use `box`. The following gets the box of the `2`nd
 frame:
 
+```fortran
     real :: mybox(3,3)
+    ! ...
     mybox = trj%box(2)
+```
 
 You can also get the simulation time and step corresponding with a frame you
 read in, using `time` and `step`, respectively. The following get the time associated
 with the first frame read in:
 
+```fortran
     real :: mytime
+    ! ...
     mytime = trj%time(1)
+```
 
 And now the step for the same:
 
+```fortran
     integer :: mystep
+    ! ...
     mystep = trj%step(1)
-
-Finally, when done with the reading in from the xtc file, you can close the file:
-
-    call trj%close()
+```
 
 There are several functions and subroutines in the `gmxfort_utils` module,
 including periodic boundary and distance calculations. Check out the source file
