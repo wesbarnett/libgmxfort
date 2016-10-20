@@ -29,7 +29,7 @@ The simplest way to use this library is to construct a `Trajectory` object, open
 an xtc file, read in all the data at once, and then close it:
 
 ```fortran
-    using gmxfort_trajectory
+    use gmxfort_trajectory
 
     implicit none
 
@@ -80,7 +80,7 @@ and not a subroutine. This is useful for using it with a `do while` loop. For
 example:
 
 ```fortran
-    using gmxfort_trajectory
+    use gmxfort_trajectory
 
     implicit none
 
