@@ -19,9 +19,7 @@ program angles
     real(8), dimension(3) :: a, b, c, d
     real(8) :: box(3,3)
 
-    call trj%open("traj.xtc", "index.ndx")
-    call trj%read()
-    call trj%close()
+    call trj%read("traj.xtc", "index.ndx")
 
     NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
