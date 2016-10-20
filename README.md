@@ -40,6 +40,9 @@ an xtc file, read in all the data at once, and then close it:
     call trj%close()
 ```
 
+The `trj` object in this example now stores all of the coordinates and
+information from the .xtc file.
+
 If you have a corresponding index file you would add a second argument to
 `open`:
 
@@ -47,12 +50,12 @@ If you have a corresponding index file you would add a second argument to
     call trj%open("traj.xtc", "index.ndx")
 ```
 
-Note that memory is allocated in chunks during this `read` process in order to
+Note that memory is allocated in chunks during this `read()` process in order to
 save time. By default enough memory is allocated for 1000 frames at one time.
 Allocating enough memory for only one frame at a time and then moving the
 allocation is very slow. You can change the size of each allocation by passing
-it as an argument. For example, to allocated in 10,000 frame chunks you would
-do:
+it as an argument. For example, to allocate enough memory for 10,000 frame
+chunks you would do:
 
 ```fortran
     call trj%read(10000)
@@ -94,21 +97,24 @@ example:
         do i = 1, n
             ! do some things with the frames read in
         end do
+        n = trj%read_next(10)
     end do
 
     call trj%close()
 ```
 
 After calling `read()` or `read_next()` every atom's coordinates are accessible
-via `x`. For exmaple, to get the coordinates of the first atom in the first
-frame you would do the following. The frame is the first argument and the atom
-number is the second argument. 
+via the `x()` method. For example, to get the coordinates of the first atom in
+the first frame you would do the following. The frame is the first argument and
+the atom number is the second argument. 
 
 ```fortran
     real :: myatom(3)
-    ...
+    ! ...
     myatom = trj%x(1, 1)
 ```
+
+**NOTE**: Fortran uses one-based indexing, and that convention is retained here.
 
 If you read in an index file, you can get atom coordinates in relationship to
 that. The following gets the fifth atom in index group `C` in the `10`th frame:
@@ -117,16 +123,16 @@ that. The following gets the fifth atom in index group `C` in the `10`th frame:
     myatom = trj%x(10, 5, "C")
 ```
 
-Note that when you access `x` you will still have to give it the frame number as
-the first argument even if you only read in one frame with `read_next`.
-You can always get the number of frames stored in a `Trajectory`
-object with the `nframes` member:
+Note that when you use `x()` you will still have to give it the frame number as
+the first argument even if you only read in one frame with `read_next()`.  You
+can always get the number of frames stored in a `Trajectory` object with the
+`nframes` member:
 
 ```fortran
     trj%nframes
 ```
 
-You can also get the number of atoms with the `natoms` method:
+You can also get the number of atoms with the `natoms()` method:
 
 ```fortran
     trj%natoms()
