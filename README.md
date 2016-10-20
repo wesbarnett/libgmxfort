@@ -78,7 +78,7 @@ To read in more than one, specify an argument. The following reads in 10 frames:
 
 Note that when you access `x` you will still have to give it the frame number as
 the first argument, even if you only read in one frame. `read_next` actually
-returns the number of frames read in. This is useful to near the end of the
+returns the number of frames read in. This is useful when near the end of the
 file. Additionally you can always get the number of frames stored in a
 `Trajectory` object with the `nframes` member:
 
