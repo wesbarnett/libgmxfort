@@ -203,6 +203,7 @@ contains
         end do
 
         this%NFRAMES = NFRAMES
+        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
 
         call this%close()
 
