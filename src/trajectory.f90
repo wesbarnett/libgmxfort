@@ -18,7 +18,7 @@
 
 module gmxfort_trajectory
 
-    use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT
+    use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT, C_INT64_T, C_LOC, c_f_pointer
     use gmxfort_index
 
     implicit none
@@ -92,6 +92,13 @@ module gmxfort_trajectory
             type(xdrfile), intent(in) :: xd
         end function
 
+        integer(C_INT) function read_xtc_n_frames(filename, N_FRAMES, EST_NFRAMES, OFFSETS) bind(C,name="read_xtc_n_frames")
+            import
+            character(kind=C_CHAR), intent(in) :: filename(*)
+            integer(C_INT), intent(out) :: N_FRAMES, EST_NFRAMES
+            type(C_PTR) :: OFFSETS
+        end function
+
     end interface
 
 contains
@@ -145,18 +152,28 @@ contains
 
     end subroutine trajectory_open
 
-    subroutine trajectory_read(this, xtcfile, ndxfile, N)
+    subroutine trajectory_read(this, xtcfile, ndxfile)
 
         implicit none
         class(Trajectory), intent(inout) :: this
         character (len=*) :: xtcfile
         character (len=*), optional :: ndxfile
-        type(Frame), allocatable :: tmpFrameArray(:)
         real :: box_trans(3,3)
-        integer :: STAT = 0
-        integer :: I = 0
-        integer :: CHUNK
-        integer, intent(in), optional :: N
+        integer :: STAT
+        integer :: I
+        integer :: NFRAMES, EST_NFRAMES
+!       TODO: Save these offsets for later use so one can go straight to the frame desired?
+!       integer(C_INT64_T), pointer :: OFFSETS(:)
+        type(C_PTR) :: OFFSETS_C
+
+        STAT = read_xtc_n_frames(trim(xtcfile), NFRAMES, EST_NFRAMES, OFFSETS_C)
+
+!       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
+
+        if (STAT .ne. 0) then
+            write(0,*) "ERROR: Problem getting number of frames in xtc file."
+            stop 1
+        end if
 
         if (present(ndxfile)) then
             call this%open(xtcfile, ndxfile)
@@ -164,31 +181,13 @@ contains
             call this%open(xtcfile)
         end if
 
-        if (present(N) .and. N .gt. 0) then
-            CHUNK = N
-        else
-            CHUNK = 1000
-        end if
+        allocate(this%frameArray(NFRAMES))
 
-        do while (STAT .eq. 0)
+        do I = 1, NFRAMES
 
-            I = I + 1
-            if (modulo(I, 10) .eq. 0) then
-                write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
-            end if
-
-            if (allocated(this%frameArray) .and. mod(I,CHUNK) .eq. 0) then
-                allocate(tmpFrameArray(size(this%frameArray)+CHUNK))
-                tmpFrameArray(1:size(this%frameArray)) = this%frameArray
-                deallocate(this%frameArray)
-                call move_alloc(tmpFrameArray, this%frameArray)
-            else if (.not. allocated(this%frameArray)) then
-                if (CHUNK .gt. 1) then
-                    allocate(this%frameArray(CHUNK-1))
-                else
-                    allocate(this%frameArray(1))
-                end if
-            end if
+             if (modulo(I, 10) .eq. 0) then
+                 write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
+             end if
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
             STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
@@ -196,14 +195,14 @@ contains
             ! C is row-major, whereas Fortran is column major. Hence the following.
             this%frameArray(I)%box = transpose(box_trans)
 
+            if (STAT .ne. 0) then
+                write(0,*) "ERROR: Problem reading in xtc file."
+                stop 1
+            end if
+
         end do
 
-        this%NFRAMES = I-1
-        allocate(tmpFrameArray(this%NFRAMES))
-        deallocate(this%frameArray(I)%xyz)
-        tmpFrameArray = this%frameArray(1:this%NFRAMES)
-        deallocate(this%frameArray)
-        call move_alloc(tmpFrameArray, this%frameArray)
+        this%NFRAMES = NFRAMES
 
         call this%close()
 

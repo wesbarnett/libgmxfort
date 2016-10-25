@@ -5,7 +5,7 @@ trajectory files (.xtc) and index files (.ndx).
 
 ## Requirements
 
-xdrfile is required.
+[xdrfile](https://github.com/wesbarnett/xdrfile) is required.
 
 ## Installation
 
@@ -48,21 +48,6 @@ If you have a corresponding index file you would add a second argument to
 ```fortran
     call trj%read("traj.xtc", "index.ndx")
 ```
-
-Note that memory is allocated in chunks during this `read()` process in order to
-save time. By default enough memory is allocated for 1000 frames at one time.
-Allocating enough memory for only one frame at a time and then moving the
-allocation is very slow. You can change the size of each allocation by passing
-it as an argument. For example, to allocate enough memory for 10,000 frame
-chunks you would do:
-
-```fortran
-    call trj%read("traj.xtc", "index.ndx", 10000)
-```
-
-This still reads in all frames, not just the first 10,000. This just helps with
-managing the memory. A larger number means less allocation moves, but more
-memory is needed.
 
 If you want to read in the trajectory file in frame-by-frame use `read_next()`
 instead of `read()`. To use this, you must additionally open and close the xtc
