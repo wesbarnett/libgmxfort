@@ -185,7 +185,7 @@ contains
 
         do I = 1, NFRAMES
 
-             if (modulo(I, 10) .eq. 0) then
+             if (modulo(I, 1000) .eq. 0) then
                  write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
              end if
 
