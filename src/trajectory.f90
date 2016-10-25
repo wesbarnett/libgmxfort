@@ -18,7 +18,7 @@
 
 module gmxfort_trajectory
 
-    use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT, C_INT64_T, C_LOC, c_f_pointer
+    use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT
     use gmxfort_index
 
     implicit none
@@ -105,7 +105,7 @@ contains
 
     subroutine trajectory_open(this, filename_in, ndxfile)
 
-        use, intrinsic :: iso_c_binding, only: C_NULL_CHAR, C_CHAR, c_f_pointer
+        use, intrinsic :: iso_c_binding, only: C_NULL_CHAR, c_f_pointer
 
         implicit none
         class(Trajectory), intent(inout) :: this
@@ -124,7 +124,7 @@ contains
 
         if (ex .eqv. .false.) then
             write(0,*)
-            write(0,'(a)') "Error: "//trim(filename_in)//" does not exist."
+            write(0,'(a)') "ERROR: "//trim(filename_in)//" does not exist."
             write(0,*)
             stop
         end if
@@ -137,7 +137,7 @@ contains
 
         if (STAT .ne. 0) then
             write(0,*)
-            write(0,'(a)') "Error reading in "//trim(filename_in)//". Is it really an xtc file?"
+            write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
             write(0,*)
             stop
         end if
@@ -154,6 +154,8 @@ contains
 
     subroutine trajectory_read(this, xtcfile, ndxfile)
 
+        use, intrinsic :: iso_c_binding, only: C_NULL_CHAR
+
         implicit none
         class(Trajectory), intent(inout) :: this
         character (len=*) :: xtcfile
@@ -166,7 +168,7 @@ contains
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
         type(C_PTR) :: OFFSETS_C
 
-        STAT = read_xtc_n_frames(trim(xtcfile), NFRAMES, EST_NFRAMES, OFFSETS_C)
+        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, NFRAMES, EST_NFRAMES, OFFSETS_C)
 
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
 
@@ -265,6 +267,12 @@ contains
         integer :: STAT
 
         STAT = xdrfile_close(this % xd)
+
+        if (STAT .eq. 0) then
+            write(0,'(a)') "Closed xtc file."
+        else
+            write(0,'(a)') "ERROR: Problem closing xtc file."
+        end if
 
     end subroutine trajectory_close
 
