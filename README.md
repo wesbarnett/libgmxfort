@@ -5,7 +5,7 @@ trajectory files (.xtc) and index files (.ndx).
 
 ## Requirements
 
-[xdrfile](https://github.com/wesbarnett/xdrfile) is required.
+[xdrfile](https://github.com/wesbarnett/libxdrfile) is required.
 
 ## Installation
 
