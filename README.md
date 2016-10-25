@@ -54,15 +54,16 @@ instead of `read()`. To use this, you must additionally open and close the xtc
 file on your own. By default it reads in one frame:
 
 ```fortran
-    trj%open("traj.xtc", "index.ndx")
-    trj%read_next()
-    trj%close()
+    integer :: n
+    call trj%open("traj.xtc", "index.ndx")
+    n = trj%read_next()
+    call trj%close()
 ```
 
 To read in more than one, specify an argument. The following reads in 10 frames:
 
 ```fortran
-    trj%read_next(10)
+    n = trj%read_next(10)
 ```
 
 `read_next()` returns the number of frames actually read in. It is a function,
@@ -116,20 +117,24 @@ can always get the number of frames stored in a `Trajectory` object with the
 `nframes` member:
 
 ```fortran
-    trj%nframes
+    integer :: n
+    ! ...
+    n = trj%nframes
 ```
 
 You can also get the number of atoms with the `natoms()` method:
 
 ```fortran
-    trj%natoms()
+    integer :: n
+    ! ...
+    n = trj%natoms()
 ```
 
 If you want to know how many atoms are in an index group include the group name
 as an argument. In this example the group name is "C":
 
 ```fortran
-    trj%natoms("C")
+    n = trj%natoms("C")
 ```
 
 To get the box coordinates, use `box`. The following gets the box of the `2`nd
