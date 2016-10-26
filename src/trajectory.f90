@@ -126,10 +126,7 @@ contains
         inquire(file=trim(filename_in), exist=ex)
 
         if (ex .eqv. .false.) then
-            write(0,*)
-            write(0,'(a)') "ERROR: "//trim(filename_in)//" does not exist."
-            write(0,*)
-            call abort()
+            call error_stop_program(trim(filename_in)//" does not exist.")
         end if
 
         ! Set the file name to be read in for C.
@@ -137,19 +134,13 @@ contains
 
         ! Get number of atoms in system 
         if (read_xtc_natoms(filename, this%NUMATOMS) .ne. 0) then
-            write(0,*)
-            write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
-            write(0,*)
-            call abort()
+            call error_stop_program("Problem reading in "//trim(filename_in)//". Is it really an xtc file?")
         end if
 
         ! Get total number of frames in the trajectory file
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
         if (read_xtc_n_frames(filename, this%NFRAMES, EST_NFRAMES, OFFSETS_C) .ne. 0) then
-            write(0,*)
-            write(0,*) "ERROR: Problem getting number of frames in xtc file."
-            write(0,*)
-            call abort()
+            call error_stop_program("Problem getting number of frames in xtc file.")
         end if
         this%FRAMES_REMAINING = this%NFRAMES
 
@@ -231,7 +222,7 @@ contains
         if (xdrfile_close(this % xd) .eq. 0) then
             write(0,'(a)') "Closed xtc file."
         else
-            write(0,'(a)') "ERROR: Problem closing xtc file."
+            call error_stop_program("Problem closing xtc file.")
         end if
 
     end subroutine trajectory_close
@@ -244,6 +235,7 @@ contains
         integer :: atom_tmp, natoms
         class(Trajectory), intent(inout) :: this
         character (len=*), intent(in), optional :: group
+        character (len=1024) :: message
 
         call trajectory_check_frame(this, frame)
 
@@ -251,9 +243,9 @@ contains
         natoms = merge(this%natoms(group), this%natoms(), present(group))
 
         if (atom > natoms .or. atom < 1) then
-            write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
+            write(message, "(a,i0,a,i0,a)") "Tried to access atom number ", atom_tmp, " when there are ", &
                 natoms, ". Note that Fortran uses one-based indexing."
-            call abort()
+            call error_stop_program(trim(message))
         end if
 
         trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
@@ -312,14 +304,26 @@ contains
         implicit none
         class(Trajectory), intent(in) :: this
         integer, intent(in) :: frame
+        character (len=1024) :: message
 
         if (frame > this%NFRAMES .or. frame < 1) then
-            write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access frame number ", frame, " when there are ", &
+            write(message, "(a,i0,a,i0,a)") "Tried to access frame number ", frame, " when there are ", &
                 this%NFRAMES, ". Note that Fortran uses one-based indexing."
-            call abort()
+            call error_stop_program(trim(message))
         end if
 
     end subroutine trajectory_check_frame
+
+    subroutine error_stop_program(message)
+
+        character (len=*), intent(in) :: message
+
+            write(0,*)
+            write(0,'(a, a)') "ERROR: ", message
+            write(0,*)
+            call abort()
+
+    end subroutine error_stop_program
 
 end module gmxfort_trajectory
 
