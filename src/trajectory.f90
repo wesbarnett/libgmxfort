@@ -188,9 +188,10 @@ contains
         class(Trajectory), intent(inout) :: this
         integer, intent(in), optional :: F
         real :: box_trans(3,3)
-        integer :: STAT = 0, I, N = 1
+        integer :: STAT = 0, I, N
 
-        if (present(F) .and. F .gt. 0) N = F
+        ! If the user specified how many frames to read and it is greater than one, use it
+        N = max(1,F)
 
         ! Are we near the end of the file?
         N = min(this%FRAMES_REMAINING, N)

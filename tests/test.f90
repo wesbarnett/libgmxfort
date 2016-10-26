@@ -159,9 +159,14 @@ program test
     a = trj%read_next(200)
     ans_val = 1
     call check_int(a, ans_val, passed, total) 
-    call trj%close()
 
     ! TEST 12
+    a = trj%read_next()
+    ans_val = 0
+    call check_int(a, ans_val, passed, total) 
+    call trj%close()
+
+    ! TEST 13
     x = [5.5, 5.5, 3.5]
     box = reshape((/5.0, 0.0, 0.0, &
                     0.0, 5.0, 0.0, &
@@ -170,12 +175,12 @@ program test
     ans = [-2.000, -2.000, 0.000]
     call check_array(x, ans, passed, total) 
 
-    ! TEST 13
+    ! TEST 14
     x = [5.5, 5.5, 3.5]
     b = distance(dble(x), dble(ans), dble(box))
     call check_real(b, 0.0, passed, total)
 
-    ! TEST 14
+    ! TEST 15
     x = [5.5, 5.5, 3.5]
     y = [3.6, 4.7, 5.0]
     box = reshape((/3.5, 0.0, 0.0, &
@@ -184,23 +189,23 @@ program test
     b = distance(dble(x), dble(y), dble(box))
     call check_real(b, 2.33452, passed, total)
 
-    ! TEST 15
+    ! TEST 16
     b = magnitude(dble(x))
     call check_real(b, 8.52936, passed, total)
 
-    ! TEST 15
+    ! TEST 17
     x = [0.0, 0.0, 0.0]
     y = [0.0, 1.0, 0.0]
     z = [1.0, 1.0, 0.0]
     b = bond_angle(dble(x), dble(y), dble(z), dble(box))
     call check_real(b, real(PI/2.0d0), passed, total)
 
-    ! TEST 17
+    ! TEST 18
     w = [1.0, 1.0, 1.0]
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check_real(b, real(PI/2.0d0), passed, total)
 
-    ! TEST 18
+    ! TEST 19
     w = [1.0, 1.0, -1.0]
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check_real(b, real(-PI/2.0d0), passed, total)
