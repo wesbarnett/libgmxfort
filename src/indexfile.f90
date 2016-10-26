@@ -43,22 +43,15 @@ contains
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        integer :: INDEX_FILE_UNIT
-        integer :: IO_STATUS
-        integer :: LEFTBRACKET_INDEX
-        integer :: RIGHTBRACKET_INDEX
-        integer :: NGRPS = 0
-        integer, allocatable :: INDICES_TMP(:)
-        integer, allocatable :: TITLE_LOC(:)
-        integer, allocatable :: TMP(:)
-        integer :: I, J
+        integer :: INDEX_FILE_UNIT, IO_STATUS, LEFTBRACKET_INDEX, RIGHTBRACKET_INDE, NGRPS = 0, I, J
+        integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:), TMP(:)
         logical :: ex
 
         ! Does the file exist?
         inquire(file=trim(filename), exist=ex)
         if (ex .eqv. .false.) then
             write(0, '(a)') "ERROR: "//trim(filename)//" does not exist."
-            stop
+            stop 1
         end if
 
         ! Is in index file?
@@ -67,7 +60,7 @@ contains
         LEFTBRACKET_INDEX = index(line, "[")
         if (LEFTBRACKET_INDEX .eq. 0) then
             write(0, '(a)') "ERROR: "//trim(filename)//" is not a valid index file."
-            stop
+            stop 1
         end if
 
         ! How many groups are in it?
@@ -83,9 +76,7 @@ contains
 
         end do
 
-        if (allocated(this%group)) then
-            deallocate(this%group)
-        end if
+        if (allocated(this%group)) deallocate(this%group)
         allocate(this%group(NGRPS))
         allocate(TITLE_LOC(NGRPS+1)) ! Add one to include end of file
 
