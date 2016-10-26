@@ -163,12 +163,12 @@ contains
         real :: box_trans(3,3)
         integer :: STAT
         integer :: I
-        integer :: NFRAMES, EST_NFRAMES
+        integer :: EST_NFRAMES
 !       TODO: Save these offsets for later use so one can go straight to the frame desired?
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
         type(C_PTR) :: OFFSETS_C
 
-        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, NFRAMES, EST_NFRAMES, OFFSETS_C)
+        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, this%NFRAMES, EST_NFRAMES, OFFSETS_C)
 
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
 
@@ -183,9 +183,9 @@ contains
             call this%open(xtcfile)
         end if
 
-        allocate(this%frameArray(NFRAMES))
+        allocate(this%frameArray(this%NFRAMES))
 
-        do I = 1, NFRAMES
+        do I = 1, this%NFRAMES
 
              if (modulo(I, 1000) .eq. 0) then
                  write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
@@ -204,7 +204,6 @@ contains
 
         end do
 
-        this%NFRAMES = NFRAMES
         write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
 
         call this%close()
