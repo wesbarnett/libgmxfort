@@ -25,30 +25,15 @@ contains
 
     function pbc(a, box)
 
-        real(8), intent(in) :: a(3)
-        real(8), intent(in) :: box(3,3)
+        real(8), intent(in) :: a(3), box(3,3)
         real(8) :: pbc(3)
-        integer :: shift
+        integer :: I
 
         pbc = a
 
-        shift = nint(pbc(3) / box(3,3))
-        if (shift .ne. 0) then
-            pbc(3) = pbc(3) - box(3,3) * shift
-            pbc(2) = pbc(2) - box(2,3) * shift
-            pbc(1) = pbc(1) - box(1,3) * shift
-        end if
-
-        shift = nint(pbc(2) / box(2,2))
-        if (shift .ne. 0) then
-            pbc(2) = pbc(2) - box(2,2) * shift
-            pbc(1) = pbc(1) - box(1,2) * shift
-        end if
-
-        shift = nint(pbc(1) / box(1,1))
-        if (shift .ne. 0) then
-            pbc(1) = pbc(1) - box(1,1) * shift
-        end if
+        do I = 3, 1, -1
+            pbc(1:I) = pbc(1:I) - box(1:I,I) * nint(pbc(I) / box(I,I))
+        end do
 
     end function pbc
 
