@@ -160,15 +160,12 @@ contains
         class(Trajectory), intent(inout) :: this
         character (len=*) :: xtcfile
         character (len=*), optional :: ndxfile
-        real :: box_trans(3,3)
-        integer :: STAT
-        integer :: I
-        integer :: EST_NFRAMES
+        integer :: STAT, EST_NFRAMES, NFRAMES, N
 !       TODO: Save these offsets for later use so one can go straight to the frame desired?
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
         type(C_PTR) :: OFFSETS_C
 
-        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, this%NFRAMES, EST_NFRAMES, OFFSETS_C)
+        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, NFRAMES, EST_NFRAMES, OFFSETS_C)
 
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
 
@@ -183,28 +180,7 @@ contains
             call this%open(xtcfile)
         end if
 
-        allocate(this%frameArray(this%NFRAMES))
-
-        do I = 1, this%NFRAMES
-
-             if (modulo(I, 1000) .eq. 0) then
-                 write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
-             end if
-
-            allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
-            STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
-                this%frameArray(I)%xyz, this%frameArray(I)%prec)
-            ! C is row-major, whereas Fortran is column major. Hence the following.
-            this%frameArray(I)%box = transpose(box_trans)
-
-            if (STAT .ne. 0) then
-                write(0,*) "ERROR: Problem reading in xtc file."
-                stop 1
-            end if
-
-        end do
-
-        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
+        N = this%read_next(NFRAMES)
 
         call this%close()
 
@@ -216,11 +192,9 @@ contains
         integer :: trajectory_read_next
         class(Trajectory), intent(inout) :: this
         integer, intent(in), optional :: F
-        integer :: N
         type(Frame), allocatable :: tmpFrameArray(:)
         real :: box_trans(3,3)
-        integer :: STAT = 0
-        integer :: I
+        integer :: STAT = 0, I, N
 
         if (present(F)) then
             N = F
@@ -235,6 +209,10 @@ contains
 
         do I = 1, N
 
+             if (modulo(I, 1000) .eq. 0) then
+                 write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
+             end if
+
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
             STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
                 this%frameArray(I)%xyz, this%frameArray(I)%prec)
@@ -246,6 +224,8 @@ contains
             end if
 
         end do
+
+        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
 
         this%NFRAMES = I-1
         trajectory_read_next = this%NFRAMES
