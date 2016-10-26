@@ -37,7 +37,7 @@ module gmxfort_trajectory
         type(IndexFile) :: ndx
         integer :: NFRAMES
         integer :: NUMATOMS
-        integer :: TOTAL_FRAMES_READ
+        integer :: FRAMES_REMAINING
     contains
         procedure :: open => trajectory_open
         procedure :: read => trajectory_read
@@ -153,7 +153,7 @@ contains
             write(0,*)
             stop 1
         end if
-        this%TOTAL_FRAMES_READ = 0
+        this%FRAMES_REMAINING = this%NFRAMES
 
         ! Open the file for reading. Convert C pointer to Fortran pointer.
         xd_c = xdrfile_open(filename,"r")
@@ -166,8 +166,6 @@ contains
     end subroutine trajectory_open
 
     subroutine trajectory_read(this, xtcfile, ndxfile)
-
-        use, intrinsic :: iso_c_binding, only: C_NULL_CHAR
 
         implicit none
         class(Trajectory), intent(inout) :: this
@@ -189,7 +187,6 @@ contains
         integer :: trajectory_read_next
         class(Trajectory), intent(inout) :: this
         integer, intent(in), optional :: F
-        type(Frame), allocatable :: tmpFrameArray(:)
         real :: box_trans(3,3)
         integer :: STAT = 0, I, N
 
@@ -197,7 +194,8 @@ contains
         if (present(F)) N = F
 
         ! Are we near the end of the file?
-        if (this%TOTAL_FRAMES_READ+N > this%NFRAMES) N = this%NFRAMES - this%TOTAL_FRAMES_READ
+        if (this%FRAMES_REMAINING < N) N = this%FRAMES_REMAINING
+        this%FRAMES_REMAINING = this%FRAMES_REMAINING - N
 
         if (allocated(this%frameArray)) deallocate(this%frameArray)
         allocate(this%frameArray(N))
@@ -212,13 +210,10 @@ contains
             ! C is row-major, whereas Fortran is column major. Hence the following.
             this%frameArray(I)%box = transpose(box_trans)
 
-            if (STAT .ne. 0) exit
-
         end do
 
         write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", N
 
-        this%TOTAL_FRAMES_READ = this%TOTAL_FRAMES_READ + N
         trajectory_read_next = N
 
     end function trajectory_read_next
