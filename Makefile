@@ -6,11 +6,11 @@ LICDIR = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 
 libgmxfort.so: indexfile.o trajectory.o utils.o
 	@mkdir -p lib 
-	@gfortran -o lib/$@ src/*.o -std=f2008 -fPIC -shared -lxdrfile -Wall
+	@gfortran -o lib/$@ src/*.o -std=gnu -fPIC -shared -lxdrfile -Wall
 
 %.o: src/%.f90
 	@mkdir -p include
-	@gfortran -c -o src/$@ $< -Jinclude -std=f2008 -fPIC -shared -lxdrfile -Wall
+	@gfortran -c -o src/$@ $< -Jinclude -std=gnu -fPIC -shared -lxdrfile -Wall
 
 test: libgmxfort.so
 	@gfortran tests/test.f90 -o tests/$@ -Iinclude -Jtests lib/libgmxfort.so

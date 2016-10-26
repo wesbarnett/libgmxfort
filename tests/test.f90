@@ -201,7 +201,7 @@ program test
 
     if (passed .ne. total) then
         write(0, '(a)') "WARNING: Some tests failed!"
-        stop 1
+        call abort()
     end if
 
 end program test

@@ -51,7 +51,7 @@ contains
         inquire(file=trim(filename), exist=ex)
         if (ex .eqv. .false.) then
             write(0, '(a)') "ERROR: "//trim(filename)//" does not exist."
-            stop 1
+            call abort()
         end if
 
         ! Is in index file?
@@ -60,7 +60,7 @@ contains
         LEFTBRACKET_INDEX = index(line, "[")
         if (LEFTBRACKET_INDEX .eq. 0) then
             write(0, '(a)') "ERROR: "//trim(filename)//" is not a valid index file."
-            stop 1
+            call abort()
         end if
 
         ! How many groups are in it?
@@ -143,7 +143,7 @@ contains
 
         if (size(this%group) == 0) then
             write(0, '(a)') "ERROR: No groups found in index file. Did you specify an index file in open()?"
-            stop 1
+            call abort()
         end if
 
         do J = 1, size(this%group)
@@ -159,9 +159,9 @@ contains
 
         write(0, '(a)') "ERROR: "//trim(group_name)//" is not in index file. The groups available are:"
         do J = 1, size(this%group)
-            write(0,'(a,a,i0,a)') this%group(J)%title, "(", this%group(J)%NUMATOMS, ")"
+            write(0,'(a10,a,i0,a)') this%group(J)%title, " (", this%group(J)%NUMATOMS, ")"
         end do
-        stop 1
+        call abort()
 
     end function indexfile_get
 

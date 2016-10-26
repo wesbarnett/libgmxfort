@@ -129,7 +129,7 @@ contains
             write(0,*)
             write(0,'(a)') "ERROR: "//trim(filename_in)//" does not exist."
             write(0,*)
-            stop 1
+            call abort()
         end if
 
         ! Set the file name to be read in for C.
@@ -140,7 +140,7 @@ contains
             write(0,*)
             write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
             write(0,*)
-            stop 1
+            call abort()
         end if
 
         ! Get total number of frames in the trajectory file
@@ -149,7 +149,7 @@ contains
             write(0,*)
             write(0,*) "ERROR: Problem getting number of frames in xtc file."
             write(0,*)
-            stop 1
+            call abort()
         end if
         this%FRAMES_REMAINING = this%NFRAMES
 
@@ -252,7 +252,7 @@ contains
         if (atom > natoms .or. atom < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
                 natoms, ". Note that Fortran uses one-based indexing."
-            stop 1
+            call abort()
         end if
 
         trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
@@ -315,7 +315,7 @@ contains
         if (frame > this%NFRAMES .or. frame < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access frame number ", frame, " when there are ", &
                 this%NFRAMES, ". Note that Fortran uses one-based indexing."
-            stop 1
+            call abort()
         end if
 
     end subroutine trajectory_check_frame
