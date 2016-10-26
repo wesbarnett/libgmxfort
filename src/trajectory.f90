@@ -37,6 +37,7 @@ module gmxfort_trajectory
         type(IndexFile) :: ndx
         integer :: NFRAMES
         integer :: NUMATOMS
+        integer :: TOTAL_FRAMES_READ
     contains
         procedure :: open => trajectory_open
         procedure :: read => trajectory_read
@@ -114,7 +115,11 @@ contains
         character (len=*), intent(in), optional :: ndxfile
         character (len=206) :: filename
         logical :: ex
-        integer :: STAT
+        integer :: STAT, EST_NFRAMES
+        type(C_PTR) :: OFFSETS_C
+!       TODO: Save these offsets for later use so one can go straight to the frame desired?
+!       integer(C_INT64_T), pointer :: OFFSETS(:)
+
 
         if (present(ndxfile)) call this%ndx%read(ndxfile)
 
@@ -130,15 +135,25 @@ contains
         ! Set the file name to be read in for C.
         filename = trim(filename_in)//C_NULL_CHAR
 
-        ! Get number of atoms in system and allocate xyzition array.
+        ! Get number of atoms in system 
         STAT = read_xtc_natoms(filename, this%NUMATOMS)
-
         if (STAT .ne. 0) then
             write(0,*)
             write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
             write(0,*)
             stop 1
         end if
+
+        ! Get total number of frames in the trajectory file
+        STAT = read_xtc_n_frames(filename, this%NFRAMES, EST_NFRAMES, OFFSETS_C)
+!       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
+        if (STAT .ne. 0) then
+            write(0,*)
+            write(0,*) "ERROR: Problem getting number of frames in xtc file."
+            write(0,*)
+            stop 1
+        end if
+        this%TOTAL_FRAMES_READ = 0
 
         ! Open the file for reading. Convert C pointer to Fortran pointer.
         xd_c = xdrfile_open(filename,"r")
@@ -158,23 +173,11 @@ contains
         class(Trajectory), intent(inout) :: this
         character (len=*) :: xtcfile
         character (len=*), optional :: ndxfile
-        integer :: STAT, EST_NFRAMES, NFRAMES, N
-!       TODO: Save these offsets for later use so one can go straight to the frame desired?
-!       integer(C_INT64_T), pointer :: OFFSETS(:)
-        type(C_PTR) :: OFFSETS_C
-
-        STAT = read_xtc_n_frames(trim(xtcfile)//C_NULL_CHAR, NFRAMES, EST_NFRAMES, OFFSETS_C)
-
-!       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
-
-        if (STAT .ne. 0) then
-            write(0,*) "ERROR: Problem getting number of frames in xtc file."
-            stop 1
-        end if
+        integer :: N
 
         call this%open(xtcfile, ndxfile)
 
-        N = this%read_next(NFRAMES)
+        N = this%read_next(this%NFRAMES)
 
         call this%close()
 
@@ -193,6 +196,9 @@ contains
         N = 1
         if (present(F)) N = F
 
+        ! Are we near the end of the file?
+        if (this%TOTAL_FRAMES_READ+N > this%NFRAMES) N = this%NFRAMES - this%TOTAL_FRAMES_READ
+
         if (allocated(this%frameArray)) deallocate(this%frameArray)
         allocate(this%frameArray(N))
 
@@ -210,18 +216,10 @@ contains
 
         end do
 
-        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
+        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", N
 
-        this%NFRAMES = I-1
-
-        if (this%NFRAMES .ne. N) then
-            allocate(tmpFrameArray(this%NFRAMES))
-            tmpFrameArray = this%frameArray(1:this%NFRAMES)
-            deallocate(this%frameArray)
-            call move_alloc(tmpFrameArray, this%frameArray)
-        end if
-
-        trajectory_read_next = this%NFRAMES
+        this%TOTAL_FRAMES_READ = this%TOTAL_FRAMES_READ + N
+        trajectory_read_next = N
 
     end function trajectory_read_next
 

@@ -117,7 +117,7 @@ group names in your index file.
 
 Note that when you use `x()` you will still have to give it the frame number as
 the first argument even if you only read in one frame with `read_next()`.  You
-can always get the number of frames stored in a `Trajectory` object with the
+can always get the number of frames in a trajectory file object with the
 `nframes` member:
 
 ```fortran
