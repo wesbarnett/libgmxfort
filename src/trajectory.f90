@@ -27,7 +27,7 @@ module gmxfort_trajectory
 
     type :: Frame
         real(C_FLOAT), allocatable :: xyz(:,:)
-        integer(C_INT) :: NUMATOMS, STEP, STAT
+        integer(C_INT) :: NUMATOMS, STEP
         real(C_FLOAT) :: box(3,3), prec, time
     end type
 
@@ -115,7 +115,7 @@ contains
         character (len=*), intent(in), optional :: ndxfile
         character (len=206) :: filename
         logical :: ex
-        integer :: STAT, EST_NFRAMES
+        integer :: EST_NFRAMES
         type(C_PTR) :: OFFSETS_C
 !       TODO: Save these offsets for later use so one can go straight to the frame desired?
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
@@ -136,8 +136,7 @@ contains
         filename = trim(filename_in)//C_NULL_CHAR
 
         ! Get number of atoms in system 
-        STAT = read_xtc_natoms(filename, this%NUMATOMS)
-        if (STAT .ne. 0) then
+        if (read_xtc_natoms(filename, this%NUMATOMS) .ne. 0) then
             write(0,*)
             write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
             write(0,*)
@@ -145,9 +144,8 @@ contains
         end if
 
         ! Get total number of frames in the trajectory file
-        STAT = read_xtc_n_frames(filename, this%NFRAMES, EST_NFRAMES, OFFSETS_C)
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
-        if (STAT .ne. 0) then
+        if (read_xtc_n_frames(filename, this%NFRAMES, EST_NFRAMES, OFFSETS_C) .ne. 0) then
             write(0,*)
             write(0,*) "ERROR: Problem getting number of frames in xtc file."
             write(0,*)
@@ -228,11 +226,8 @@ contains
 
         implicit none
         class(Trajectory), intent(inout) :: this
-        integer :: STAT
 
-        STAT = xdrfile_close(this % xd)
-
-        if (STAT .eq. 0) then
+        if (xdrfile_close(this % xd) .eq. 0) then
             write(0,'(a)') "Closed xtc file."
         else
             write(0,'(a)') "ERROR: Problem closing xtc file."
