@@ -43,7 +43,7 @@ contains
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        integer :: INDEX_FILE_UNIT, IO_STATUS, LEFTBRACKET_INDEX, RIGHTBRACKET_INDE, NGRPS = 0, I, J
+        integer :: INDEX_FILE_UNIT, IO_STATUS, LEFTBRACKET_INDEX, RIGHTBRACKET_INDEX, NGRPS = 0, I, J
         integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:), TMP(:)
         logical :: ex
 
