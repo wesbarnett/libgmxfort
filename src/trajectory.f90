@@ -159,6 +159,7 @@ contains
 
         write(0,'(a)') "Opened "//trim(filename)//" for reading."
         write(0,'(i0,a)') this%NUMATOMS, " atoms present in system."
+        write(0,'(i0,a)') this%NFRAMES, " frames present in trajectory file."
 
     end subroutine trajectory_open
 
