@@ -19,8 +19,7 @@
 module gmxfort_utils
 
     implicit none
-    private
-    public pbc, cross, distance, distance2, bond_vector, magnitude, bond_angle, dihedral_angle
+    public
  
 contains
 
