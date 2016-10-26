@@ -116,9 +116,7 @@ contains
         logical :: ex
         integer :: STAT
 
-        if (present(ndxfile)) then
-            call this%ndx%read(ndxfile)
-        end if
+        if (present(ndxfile)) call this%ndx%read(ndxfile)
 
         inquire(file=trim(filename_in), exist=ex)
 
@@ -126,7 +124,7 @@ contains
             write(0,*)
             write(0,'(a)') "ERROR: "//trim(filename_in)//" does not exist."
             write(0,*)
-            stop
+            stop 1
         end if
 
         ! Set the file name to be read in for C.
@@ -139,7 +137,7 @@ contains
             write(0,*)
             write(0,'(a)') "ERROR: Problem reading in "//trim(filename_in)//". Is it really an xtc file?"
             write(0,*)
-            stop
+            stop 1
         end if
 
         ! Open the file for reading. Convert C pointer to Fortran pointer.
@@ -196,22 +194,15 @@ contains
         real :: box_trans(3,3)
         integer :: STAT = 0, I, N
 
-        if (present(F)) then
-            N = F
-        else
-            N = 1
-        end if
+        N = 1
+        if (present(F)) N = F
 
-        if (allocated(this%frameArray)) then
-            deallocate(this%frameArray)
-        end if
+        if (allocated(this%frameArray)) deallocate(this%frameArray)
         allocate(this%frameArray(N))
 
         do I = 1, N
 
-             if (modulo(I, 1000) .eq. 0) then
-                 write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
-             end if
+            if (modulo(I, 1000) .eq. 0) write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
             STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
@@ -219,16 +210,13 @@ contains
             ! C is row-major, whereas Fortran is column major. Hence the following.
             this%frameArray(I)%box = transpose(box_trans)
 
-            if (STAT .ne. 0) then
-                exit
-            end if
+            if (STAT .ne. 0) exit
 
         end do
 
         write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I-1
 
         this%NFRAMES = I-1
-        trajectory_read_next = this%NFRAMES
 
         if (this%NFRAMES .ne. N) then
             allocate(tmpFrameArray(this%NFRAMES))
@@ -236,6 +224,8 @@ contains
             deallocate(this%frameArray)
             call move_alloc(tmpFrameArray, this%frameArray)
         end if
+
+        trajectory_read_next = this%NFRAMES
 
     end function trajectory_read_next
 
@@ -266,6 +256,7 @@ contains
 
         call trajectory_check_frame(this, frame)
 
+
         if (present(group)) then
             atom_tmp = this%ndx%get(group, atom)
             natoms = this%natoms(group)
@@ -273,11 +264,13 @@ contains
             atom_tmp = atom
             natoms = this%natoms()
         end if
+
         if (atom_tmp > natoms .or. atom_tmp < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
                 natoms, ". Note that Fortran uses one-based indexing."
             stop 1
         end if
+
         trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
 
     end function trajectory_get_xyz
