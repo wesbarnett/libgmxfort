@@ -279,9 +279,8 @@ contains
 
         implicit none
         real :: trajectory_get_xyz(3)
-        integer, intent(in) :: frame
-        integer, intent(in) :: atom
-        integer :: atom_tmp
+        integer, intent(in) :: frame, atom
+        integer :: atom_tmp, natoms
         class(Trajectory), intent(inout) :: this
         character (len=*), intent(in), optional :: group
 
@@ -289,20 +288,17 @@ contains
 
         if (present(group)) then
             atom_tmp = this%ndx%get(group, atom)
-            if (atom_tmp > this%natoms() .or. atom_tmp < 1) then
-                write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
-                    this%natoms(), ". Note that Fortran uses one-based indexing."
-                stop 1
-            end if
-            trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
+            natoms = this%natoms(group)
         else
-            if (atom > this%natoms() .or. atom < 1) then
-                write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom, " when there are ", &
-                    this%natoms(), ". Note that Fortran uses one-based indexing."
-                stop 1
-            end if
-            trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom)
+            atom_tmp = atom
+            natoms = this%natoms()
         end if
+        if (atom_tmp > natoms .or. atom_tmp < 1) then
+            write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
+                natoms, ". Note that Fortran uses one-based indexing."
+            stop 1
+        end if
+        trajectory_get_xyz = this%frameArray(frame)%xyz(:,atom_tmp)
 
     end function trajectory_get_xyz
 
