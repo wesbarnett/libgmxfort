@@ -19,7 +19,7 @@ contains
         total = total + 1
         passed = passed + I
 
-        write(0, '(a,i0,a,a)') "TEST ", total, ": ", passfail(I)
+        write(0, '(a,i2,a,a)') "TEST ", total, ": ", passfail(I)
 
     end subroutine do_output
 
@@ -197,7 +197,9 @@ program test
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check(b, real(-PI/2.0d0), passed, total)
 
+    write(0,*)
     write(0,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
+    write(0,*)
 
     if (passed .ne. total) then
         write(0, '(a)') "WARNING: Some tests failed!"
