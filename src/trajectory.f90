@@ -190,7 +190,7 @@ contains
         integer :: STAT = 0, I, N
 
         ! If the user specified how many frames to read and it is greater than one, use it
-        N = max(1,F)
+        N = merge(F, 1, present(F))
 
         ! Are we near the end of the file?
         N = min(this%FRAMES_REMAINING, N)
@@ -251,13 +251,8 @@ contains
 
         call trajectory_check_frame(this, frame)
 
-        if (present(group)) then
-            atom_tmp = this%ndx%get(group, atom)
-            natoms = this%natoms(group)
-        else
-            atom_tmp = atom
-            natoms = this%natoms()
-        end if
+        atom_tmp = merge(this%ndx%get(group, atom), atom, present(group))
+        natoms = merge(this%natoms(group), this%natoms(), present(group))
 
         if (atom > natoms .or. atom < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
@@ -275,12 +270,8 @@ contains
         integer :: trajectory_get_natoms
         class(Trajectory), intent(in) :: this
         character (len=*), intent(in), optional :: group
-
-        if (present(group)) then
-            trajectory_get_natoms = this%ndx%get_natoms(group)
-        else
-            trajectory_get_natoms = this%NUMATOMS
-        end if
+        
+        trajectory_get_natoms = merge(this%ndx%get_natoms(group), this%NUMATOMS, present(group))
 
     end function trajectory_get_natoms
 
