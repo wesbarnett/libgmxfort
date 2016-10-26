@@ -161,7 +161,6 @@ contains
 
         write(0,'(a)') "Opened "//trim(filename)//" for reading."
         write(0,'(i0,a)') this%NUMATOMS, " atoms present in system."
-        write(0,*)
 
     end subroutine trajectory_open
 
@@ -200,9 +199,10 @@ contains
         if (allocated(this%frameArray)) deallocate(this%frameArray)
         allocate(this%frameArray(N))
 
+        write(0,*)
         do I = 1, N
 
-            if (modulo(I, 1000) .eq. 0) write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", I
+            if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
 
             allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
             STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
@@ -212,11 +212,17 @@ contains
 
         end do
 
-        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frame saved: ", N
-
+        call print_frames_saved(N)
         trajectory_read_next = N
 
     end function trajectory_read_next
+
+    subroutine print_frames_saved(I)
+
+        integer, intent(in) :: I
+        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frames saved: ", I
+
+    end subroutine print_frames_saved
 
     subroutine trajectory_close(this)
 
@@ -244,7 +250,6 @@ contains
         character (len=*), intent(in), optional :: group
 
         call trajectory_check_frame(this, frame)
-
 
         if (present(group)) then
             atom_tmp = this%ndx%get(group, atom)
