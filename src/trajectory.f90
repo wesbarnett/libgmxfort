@@ -259,7 +259,7 @@ contains
             natoms = this%natoms()
         end if
 
-        if (atom_tmp > natoms .or. atom_tmp < 1) then
+        if (atom > natoms .or. atom < 1) then
             write(0, "(a,i0,a,i0,a)") "ERROR: Tried to access atom number ", atom_tmp, " when there are ", &
                 natoms, ". Note that Fortran uses one-based indexing."
             stop 1

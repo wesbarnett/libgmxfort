@@ -148,7 +148,7 @@ contains
 
         do J = 1, size(this%group)
 
-            if (this%group(J)%title .eq. group_name) then
+            if (trim(this%group(J)%title) .eq. trim(group_name)) then
 
                 if (present(I)) then
                     indexfile_get = this%group(J)%LOC(I)
