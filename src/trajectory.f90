@@ -172,11 +172,7 @@ contains
             stop 1
         end if
 
-        if (present(ndxfile)) then
-            call this%open(xtcfile, ndxfile)
-        else
-            call this%open(xtcfile)
-        end if
+        call this%open(xtcfile, ndxfile)
 
         N = this%read_next(NFRAMES)
 

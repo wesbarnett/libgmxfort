@@ -100,7 +100,7 @@ program test
     real :: x(3), y(3), z(3), w(3), ans(3), box(3,3), ans_box(3,3), b, c
     integer :: passed = 0, total = 0, a, ans_val
 
-    call trj%read(xtcfile, ndxfile)
+    call trj%read(xtcfile)
 
     ! TEST 1
     x = trj%x(1, 1)
@@ -117,6 +117,7 @@ program test
     ans = [4.060, 0.155, 0.262]
     call check_array(x, ans, passed, total)
 
+    call trj%read(xtcfile, ndxfile)
     ! TEST 4
     x = trj%x(100, 100, "OW")
     ans = [0.115, 1.048, 3.222]
@@ -205,5 +206,6 @@ program test
         write(0, '(a)') "WARNING: Some tests failed!"
         stop 1
     end if
+
 
 end program test
