@@ -4,7 +4,7 @@ INCLUDE = ${DESTDIR}${PREFIX}/include
 LIBDIR = ${DESTDIR}${PREFIX}/lib
 LICDIR = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 
-libgmxfort.so: indexfile.o trajectory.o utils.o
+libgmxfort.so: common.o indexfile.o trajectory.o utils.o
 	@mkdir -p lib 
 	@gfortran -o lib/$@ src/*.o -std=gnu -fPIC -shared -lxdrfile -Wall
 

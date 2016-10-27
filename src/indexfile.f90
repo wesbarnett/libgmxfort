@@ -19,6 +19,8 @@
 
 module gmxfort_index
 
+    use gmxfort_common
+
     implicit none
     private
 
@@ -49,19 +51,13 @@ contains
 
         ! Does the file exist?
         inquire(file=trim(filename), exist=ex)
-        if (ex .eqv. .false.) then
-            write(0, '(a)') "ERROR: "//trim(filename)//" does not exist."
-            call abort()
-        end if
+        if (ex .eqv. .false.) call error_stop_program(trim(filename)//" does not exist.")
 
         ! Is in index file?
         open(newunit=INDEX_FILE_UNIT, file=trim(filename), status="old")
         read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
         LEFTBRACKET_INDEX = index(line, "[")
-        if (LEFTBRACKET_INDEX .eq. 0) then
-            write(0, '(a)') "ERROR: "//trim(filename)//" is not a valid index file."
-            call abort()
-        end if
+        if (LEFTBRACKET_INDEX .eq. 0) call error_stop_program(trim(filename)//" is not a valid index file.")
 
         ! How many groups are in it?
         rewind INDEX_FILE_UNIT
@@ -140,10 +136,10 @@ contains
         character (len=*), intent(in) :: group_name
         integer, intent(in), optional :: I
         integer :: J
+        character (len=10000) :: msg
 
         if (size(this%group) == 0) then
-            write(0, '(a)') "ERROR: No groups found in index file. Did you specify an index file in open()?"
-            call abort()
+            call error_stop_program("No groups found in index file. Did you specify an index file in open()?")
         end if
 
         do J = 1, size(this%group)
@@ -157,11 +153,11 @@ contains
 
         end do
 
-        write(0, '(a)') "ERROR: "//trim(group_name)//" is not in index file. The groups available are:"
+        write(msg, '(a)') trim(group_name)//" is not in index file. The groups available are:"
         do J = 1, size(this%group)
-            write(0,'(a10,a,i0,a)') this%group(J)%title, " (", this%group(J)%NUMATOMS, ")"
+            write(msg,'(a10,a,i0,a)') this%group(J)%title, " (", this%group(J)%NUMATOMS, ")"
         end do
-        call abort()
+        call error_stop_program(msg)
 
     end function indexfile_get
 

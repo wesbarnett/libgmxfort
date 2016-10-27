@@ -19,6 +19,7 @@
 module gmxfort_trajectory
 
     use, intrinsic :: iso_c_binding, only: C_PTR, C_CHAR, C_FLOAT, C_INT
+    use gmxfort_common
     use gmxfort_index
 
     implicit none
@@ -313,17 +314,6 @@ contains
         end if
 
     end subroutine trajectory_check_frame
-
-    subroutine error_stop_program(message)
-
-        character (len=*), intent(in) :: message
-
-            write(0,*)
-            write(0,'(a, a)') "ERROR: ", message
-            write(0,*)
-            call abort()
-
-    end subroutine error_stop_program
 
 end module gmxfort_trajectory
 
