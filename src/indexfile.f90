@@ -45,7 +45,7 @@ contains
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        integer :: INDEX_FILE_UNIT, IO_STATUS, LEFTBRACKET_INDEX, RIGHTBRACKET_INDEX, NGRPS = 0, I, J
+        integer :: INDEX_FILE_UNIT, IO_STATUS, NGRPS = 0, I, J
         integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:), TMP(:)
         logical :: ex
 
@@ -56,25 +56,18 @@ contains
         ! Is in index file?
         open(newunit=INDEX_FILE_UNIT, file=trim(filename), status="old")
         read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-        LEFTBRACKET_INDEX = index(line, "[")
-        if (LEFTBRACKET_INDEX .eq. 0) call error_stop_program(trim(filename)//" is not a valid index file.")
+        if (index(line, "[") .eq. 0) call error_stop_program(trim(filename)//" is not a valid index file.")
 
         ! How many groups are in it?
         rewind INDEX_FILE_UNIT
         IO_STATUS = 0
         do while (IO_STATUS .eq. 0)
-
             read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-            LEFTBRACKET_INDEX = index(line, "[")
-            if (LEFTBRACKET_INDEX .ne. 0) then
-                NGRPS = NGRPS + 1 
-            end if
-
+            NGRPS = merge(NGRPS + 1, NGRPS, index(line, "[") .ne. 0)
         end do
 
         if (allocated(this%group)) deallocate(this%group)
-        allocate(this%group(NGRPS))
-        allocate(TITLE_LOC(NGRPS+1)) ! Add one to include end of file
+        allocate(this%group(NGRPS), TITLE_LOC(NGRPS+1)) ! Add one to include end of file
 
         ! Now find the title locations and save their names
         rewind INDEX_FILE_UNIT
@@ -84,10 +77,8 @@ contains
         do while (IO_STATUS .eq. 0)
 
             read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-            LEFTBRACKET_INDEX = index(line, "[")
-            RIGHTBRACKET_INDEX = index(line, "]")
-            if (LEFTBRACKET_INDEX .ne. 0) then
-                this%group(I)%title = trim(line(LEFTBRACKET_INDEX+2:RIGHTBRACKET_INDEX-2))
+            if (index(line, "[") .ne. 0) then
+                this%group(I)%title = trim(line(index(line, "[")+2:index(line, "]")-2))
                 TITLE_LOC(I) = J
                 I = I + 1
             end if
@@ -102,21 +93,19 @@ contains
         do I = 1, NGRPS
             allocate(INDICES_TMP((TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15))
             read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-            LEFTBRACKET_INDEX = index(line, "[")
-            do while  (LEFTBRACKET_INDEX .eq. 0)
+            do while (index(line, "[") .eq. 0)
                 backspace INDEX_FILE_UNIT
                 backspace INDEX_FILE_UNIT
                 read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-                LEFTBRACKET_INDEX = index(line, "[")
             end do
             INDICES_TMP = -1
             read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP
             if (minval(INDICES_TMP) .eq. -1) then
                 allocate(TMP(size(minloc(INDICES_TMP))))
                 TMP = minloc(INDICES_TMP)
-                allocate(this%group(I)%LOC(TMP(1)-1))
-                this%group(I)%LOC = INDICES_TMP(1:TMP(1)-1)
                 this%group(I)%NUMATOMS = TMP(1)-1
+                allocate(this%group(I)%LOC(this%group(I)%NUMATOMS))
+                this%group(I)%LOC = INDICES_TMP(1:this%group(I)%NUMATOMS)
                 deallocate(TMP)
             else
                 this%group(I)%LOC = INDICES_TMP
