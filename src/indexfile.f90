@@ -90,12 +90,10 @@ contains
         rewind INDEX_FILE_UNIT
 
         ! Now finally get all of the indices for each group
+        ! TODO: Need a better way to do this!
         do I = 1, NGRPS
             allocate(INDICES_TMP((TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15))
-            read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-            do while (index(line, "[") .eq. 0)
-                backspace INDEX_FILE_UNIT
-                backspace INDEX_FILE_UNIT
+            do J = 1, TITLE_LOC(I)
                 read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
             end do
             INDICES_TMP = -1
@@ -111,6 +109,7 @@ contains
                 this%group(I)%LOC = INDICES_TMP
             end if
             deallocate(INDICES_TMP)
+            rewind INDEX_FILE_UNIT
         end do
         close(INDEX_FILE_UNIT)
         

@@ -126,6 +126,11 @@ program test
     ans_val = 4125
     call check(a, ans_val, passed, total) 
 
+
+    a = trj%natoms("TEST")
+    ans_val = 1
+    call check(a, ans_val, passed, total) 
+
     ! TEST 8
     a = trj%nframes
     ans_val = 101
