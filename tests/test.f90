@@ -218,6 +218,15 @@ program test
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check(b, real(-PI/2.0d0), passed, total)
 
+    ! TEST 24
+    call trj%open(xtcfile, ndxfile)
+    a = trj%read_next(50, "OW")
+    a = trj%read_next(200, "OW")
+    x = trj%x(50, 100)
+    ans = [0.115, 1.048, 3.222]
+    call check(x, ans, passed, total)
+    call trj%close()
+
     write(0,*)
     write(0,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
     write(0,*)
