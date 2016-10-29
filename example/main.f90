@@ -163,4 +163,45 @@ program angles
 
     deallocate(ang)
 
+    ! Using read_next(), performing calculations in chunks
+    call trj%open("traj.xtc", "index.ndx")
+
+    NSITES = trj%natoms(index_grp)
+    NANGLES = NSITES - 3
+
+    write(nchar,"(i0)") NANGLES
+
+    allocate(ang(NANGLES))
+
+    open(newunit=U, file="angles5.dat")
+
+    N = 1
+    do while (N .ne. 0)
+
+        N = trj%read_next(10, index_grp)
+        do I = 1, N
+
+            do J = 1, NANGLES
+                
+                a = trj%x(I, J)
+                b = trj%x(I, J+1)
+                c = trj%x(I, J+2)
+                d = trj%x(I, J+3)
+                box = trj%box(I)
+                ang(J) = dihedral_angle(a, b, c, d, box)
+
+            end do
+
+            write(U, "("//trim(nchar)//"f12.6)") ang
+
+        end do
+
+    end do
+
+    close(U)
+
+    call trj%close()
+
+    deallocate(ang)
+
 end program angles

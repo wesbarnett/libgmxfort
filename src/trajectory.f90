@@ -28,7 +28,7 @@ module gmxfort_trajectory
 
     type :: Frame
         real(C_FLOAT), allocatable :: xyz(:,:)
-        integer(C_INT) :: NUMATOMS, STEP
+        integer(C_INT) :: STEP
         real(C_FLOAT) :: box(3,3), prec, time
     end type
 
@@ -37,7 +37,7 @@ module gmxfort_trajectory
         type(Frame), allocatable :: frameArray(:)
         type(IndexFile) :: ndx
         integer :: NFRAMES
-        integer :: NUMATOMS
+        integer :: NUMATOMS, N
         integer :: FRAMES_REMAINING
     contains
         procedure :: open => trajectory_open
@@ -135,6 +135,7 @@ contains
             call error_stop_program("Problem reading in "//trim(filename_in)//". Is it really an xtc file?")
         end if
 
+        this%N = this%NUMATOMS ! Save for use when user selects just one group
         if (present(ndxfile)) call this%ndx%read(ndxfile, this%NUMATOMS)
 
         ! Get total number of frames in the trajectory file
@@ -179,7 +180,7 @@ contains
         character (len=*), optional :: ndxgrp
         real :: box_trans(3,3)
         real, allocatable :: xyz(:,:)
-        integer :: STAT = 0, I, N, J
+        integer :: STAT = 0, I, N, J, NATOMS
 
         ! If the user specified how many frames to read and it is greater than one, use it
         N = merge(F, 1, present(F))
@@ -195,17 +196,17 @@ contains
 
         if (present(ndxgrp)) then
 
-            allocate(xyz(3,this%NUMATOMS))
-            this%NUMATOMS = this%natoms(ndxgrp)
+            allocate(xyz(3,this%N))
+            this%NUMATOMS = this%natoms(trim(ndxgrp))
             do I = 1, N
 
                 if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
 
-                STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+                STAT = read_xtc(this%xd, NATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
                     xyz, this%frameArray(I)%prec)
                 ! C is row-major, whereas Fortran is column major. Hence the following.
                 this%frameArray(I)%box = transpose(box_trans)
-                allocate(this%frameArray(I)%xyz(3,this%natoms(trim(ndxgrp))))
+                allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
 
                 do J = 1, size(this%ndx%group)
                     if (trim(this%ndx%group(J)%title) .eq. trim(ndxgrp)) then
@@ -215,6 +216,7 @@ contains
                 end do
 
             end do
+            deallocate(xyz)
 
         else
 
@@ -223,7 +225,7 @@ contains
                 if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
 
                 allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
-                STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+                STAT = read_xtc(this%xd, NATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
                     this%frameArray(I)%xyz, this%frameArray(I)%prec)
                 ! C is row-major, whereas Fortran is column major. Hence the following.
                 this%frameArray(I)%box = transpose(box_trans)
