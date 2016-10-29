@@ -142,28 +142,39 @@ program test
     call check(a, ans_val, passed, total) 
 
     ! TEST 11
+    call trj%read(xtcfile, ndxfile, "OW")
+    x = trj%x(100, 100)
+    ans = [0.115, 1.048, 3.222]
+    call check(x, ans, passed, total)
+
+    ! TEST 12
+    a = trj%natoms()
+    ans_val = 4125
+    call check(a, ans_val, passed, total) 
+
+    ! TEST 13
     call trj%open(xtcfile, ndxfile)
     a = trj%read_next(100)
     x = trj%x(100, 100)
     ans = [1.455, 0.374, 0.358]
     call check(x, ans, passed, total)
 
-    ! TEST 12
+    ! TEST 14
     ans_val = 100
     call check(a, ans_val, passed, total) 
 
-    ! TEST 13
+    ! TEST 15
     a = trj%read_next(200)
     ans_val = 1
     call check(a, ans_val, passed, total) 
 
-    ! TEST 14
+    ! TEST 16
     a = trj%read_next()
     ans_val = 0
     call check(a, ans_val, passed, total) 
     call trj%close()
 
-    ! TEST 15
+    ! TEST 17
     x = [5.5, 5.5, 3.5]
     box = reshape((/5.0, 0.0, 0.0, &
                     0.0, 5.0, 0.0, &
@@ -172,12 +183,12 @@ program test
     ans = [-2.000, -2.000, 0.000]
     call check(x, ans, passed, total) 
 
-    ! TEST 16
+    ! TEST 18
     x = [5.5, 5.5, 3.5]
     b = distance(dble(x), dble(ans), dble(box))
     call check(b, 0.0, passed, total)
 
-    ! TEST 17
+    ! TEST 19
     x = [5.5, 5.5, 3.5]
     y = [3.6, 4.7, 5.0]
     box = reshape((/3.5, 0.0, 0.0, &
@@ -186,23 +197,23 @@ program test
     b = distance(dble(x), dble(y), dble(box))
     call check(b, 2.33452, passed, total)
 
-    ! TEST 18
+    ! TEST 20
     b = magnitude(dble(x))
     call check(b, 8.52936, passed, total)
 
-    ! TEST 19
+    ! TEST 21
     x = [0.0, 0.0, 0.0]
     y = [0.0, 1.0, 0.0]
     z = [1.0, 1.0, 0.0]
     b = bond_angle(dble(x), dble(y), dble(z), dble(box))
     call check(b, real(PI/2.0d0), passed, total)
 
-    ! TEST 20
+    ! TEST 22
     w = [1.0, 1.0, 1.0]
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check(b, real(PI/2.0d0), passed, total)
 
-    ! TEST 21
+    ! TEST 23
     w = [1.0, 1.0, -1.0]
     b = dihedral_angle(dble(x), dble(y), dble(z), dble(w), dble(box))
     call check(b, real(-PI/2.0d0), passed, total)

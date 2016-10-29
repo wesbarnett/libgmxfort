@@ -168,6 +168,21 @@ And now the step for the same:
     mystep = trj%step(1)
 ```
 
+As shown above, the most common use of this library is to use `read()` or
+`read_next()` to save all atom locations and then use getters like `x()` and
+`natoms()` to get information about them by specifying an index group as an
+argument. To save memory, you can save just a specific index group with
+`read()`:
+
+
+```fortran
+    trj%read(xtcfile, ndxfile, "C")
+```
+
+If you do this, you only have access to the group above, and you never should
+pass an index group name to getters like `x()`, since only one group is
+available.
+
 There are several functions and subroutines in the `gmxfort_utils` module,
 including periodic boundary and distance calculations. Check out the source file
 for what is available.

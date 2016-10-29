@@ -121,8 +121,6 @@ contains
 !       TODO: Save these offsets for later use so one can go straight to the frame desired?
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
 
-
-
         inquire(file=trim(filename_in), exist=ex)
 
         if (ex .eqv. .false.) then
@@ -156,30 +154,32 @@ contains
 
     end subroutine trajectory_open
 
-    subroutine trajectory_read(this, xtcfile, ndxfile)
+    subroutine trajectory_read(this, xtcfile, ndxfile, ndxgrp)
 
         implicit none
         class(Trajectory), intent(inout) :: this
         character (len=*) :: xtcfile
-        character (len=*), optional :: ndxfile
+        character (len=*), optional :: ndxfile, ndxgrp
         integer :: N
 
         call this%open(xtcfile, ndxfile)
 
-        N = this%read_next(this%NFRAMES)
+        N = this%read_next(this%NFRAMES, ndxgrp)
 
         call this%close()
 
     end subroutine trajectory_read
 
-    function trajectory_read_next(this, F)
+    function trajectory_read_next(this, F, ndxgrp)
 
         implicit none
         integer :: trajectory_read_next
         class(Trajectory), intent(inout) :: this
         integer, intent(in), optional :: F
+        character (len=*), optional :: ndxgrp
         real :: box_trans(3,3)
-        integer :: STAT = 0, I, N
+        real, allocatable :: xyz(:,:)
+        integer :: STAT = 0, I, N, J
 
         ! If the user specified how many frames to read and it is greater than one, use it
         N = merge(F, 1, present(F))
@@ -192,17 +192,47 @@ contains
         allocate(this%frameArray(N))
 
         write(0,*)
-        do I = 1, N
 
-            if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
+        if (present(ndxgrp)) then
 
-            allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
-            STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
-                this%frameArray(I)%xyz, this%frameArray(I)%prec)
-            ! C is row-major, whereas Fortran is column major. Hence the following.
-            this%frameArray(I)%box = transpose(box_trans)
+            allocate(xyz(3,this%NUMATOMS))
+            this%NUMATOMS = this%natoms(ndxgrp)
+            do I = 1, N
 
-        end do
+                if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
+
+                STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+                    xyz, this%frameArray(I)%prec)
+                ! C is row-major, whereas Fortran is column major. Hence the following.
+                this%frameArray(I)%box = transpose(box_trans)
+                allocate(this%frameArray(I)%xyz(3,this%natoms(trim(ndxgrp))))
+
+                do J = 1, size(this%ndx%group)
+                    if (trim(this%ndx%group(J)%title) .eq. trim(ndxgrp)) then
+                        this%frameArray(I)%xyz = xyz(:,this%ndx%group(J)%LOC)
+                        exit
+                    end if
+                end do
+
+            end do
+
+            deallocate(this%ndx%group)
+
+        else
+
+            do I = 1, N
+
+                if (modulo(I, 1000) .eq. 0) call print_frames_saved(I)
+
+                allocate(this%frameArray(I)%xyz(3,this%NUMATOMS))
+                STAT = read_xtc(this%xd, this%frameArray(I)%NUMATOMS, this%frameArray(I)%STEP, this%frameArray(I)%time, box_trans, &
+                    this%frameArray(I)%xyz, this%frameArray(I)%prec)
+                ! C is row-major, whereas Fortran is column major. Hence the following.
+                this%frameArray(I)%box = transpose(box_trans)
+
+            end do
+
+        end if
 
         call print_frames_saved(N)
         trajectory_read_next = N
