@@ -40,14 +40,15 @@ module gmxfort_index
  
 contains
 
-    subroutine indexfile_read(this, filename)
+    subroutine indexfile_read(this, filename, N)
         implicit none
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        integer :: INDEX_FILE_UNIT, IO_STATUS, NGRPS, I, J, K
+        integer :: INDEX_FILE_UNIT, IO_STATUS, NGRPS, I, J
         integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:)
         logical :: ex
+        integer, intent(in) :: N
 
         ! Does the file exist?
         inquire(file=trim(filename), exist=ex)
@@ -88,41 +89,33 @@ contains
         end do
         TITLE_LOC(I) = J-1 ! End of file location
 
-        rewind INDEX_FILE_UNIT
-
         ! Now finally get all of the indices for each group
+        ! Allocate for total number of atoms in system, since that is the maximum
+        allocate(INDICES_TMP(N))
         do I = 1, NGRPS
 
             ! Initial guess only how many items are in the group
-            K = (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15
-            allocate(INDICES_TMP(K))
+            this%group(I)%NUMATOMS = merge(N, (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15 + 1, N < (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15 + 1)
             IO_STATUS = 5000
 
             do while (IO_STATUS .ne. 0)
 
+                ! Our guess was too large if we made it back here, go to the beginning and reduce our guess by 1, try again
+                rewind INDEX_FILE_UNIT
+                this%group(I)%NUMATOMS = this%group(I)%NUMATOMS - 1
+
                 ! Read all the way to the group
-                do J = 1, TITLE_LOC(I)
-                    read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-                end do
+                do J = 1, TITLE_LOC(I); read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line; end do
 
                 ! Attempt to read into array
-                read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP(1:K)
-
-                ! We read the exact numbers there if status is 0
-                if (IO_STATUS .eq. 0) exit
-
-                ! Our guess was too large if we made it here, go to the beginning and reduce our guess by 1, try again
-                rewind INDEX_FILE_UNIT
-                K = K - 1
+                read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP(1:this%group(I)%NUMATOMS)
 
             end do
 
-            this%group(I)%NUMATOMS = K
-            allocate(this%group(I)%LOC, source=INDICES_TMP(1:K))
-            deallocate(INDICES_TMP)
-            rewind INDEX_FILE_UNIT
+            allocate(this%group(I)%LOC, source=INDICES_TMP(1:this%group(I)%NUMATOMS))
 
         end do
+        deallocate(INDICES_TMP)
 
         close(INDEX_FILE_UNIT)
         

@@ -122,7 +122,6 @@ contains
 !       integer(C_INT64_T), pointer :: OFFSETS(:)
 
 
-        if (present(ndxfile)) call this%ndx%read(ndxfile)
 
         inquire(file=trim(filename_in), exist=ex)
 
@@ -137,6 +136,8 @@ contains
         if (read_xtc_natoms(filename, this%NUMATOMS) .ne. 0) then
             call error_stop_program("Problem reading in "//trim(filename_in)//". Is it really an xtc file?")
         end if
+
+        if (present(ndxfile)) call this%ndx%read(ndxfile, this%NUMATOMS)
 
         ! Get total number of frames in the trajectory file
 !       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
