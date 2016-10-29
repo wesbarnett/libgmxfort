@@ -45,8 +45,8 @@ contains
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
         character (len=2048) :: line
-        integer :: INDEX_FILE_UNIT, IO_STATUS, NGRPS = 0, I, J
-        integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:), TMP(:)
+        integer :: INDEX_FILE_UNIT, IO_STATUS, NGRPS, I, J, K
+        integer, allocatable :: INDICES_TMP(:), TITLE_LOC(:)
         logical :: ex
 
         ! Does the file exist?
@@ -61,6 +61,7 @@ contains
         ! How many groups are in it?
         rewind INDEX_FILE_UNIT
         IO_STATUS = 0
+        NGRPS = 0
         do while (IO_STATUS .eq. 0)
             read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
             NGRPS = merge(NGRPS + 1, NGRPS, index(line, "[") .ne. 0)
@@ -90,24 +91,27 @@ contains
         rewind INDEX_FILE_UNIT
 
         ! Now finally get all of the indices for each group
-        ! TODO: Need a better way to do this!
         do I = 1, NGRPS
-            allocate(INDICES_TMP((TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15))
-            do J = 1, TITLE_LOC(I)
-                read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
+            ! Initial guess only how many items are in the group
+            K = (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15
+            allocate(INDICES_TMP(K))
+            IO_STATUS = 5000
+            do while (IO_STATUS .ne. 0)
+                ! Read all the way to the group
+                do J = 1, TITLE_LOC(I)
+                    read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
+                end do
+                ! Attempt to read into array
+                read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP(1:K)
+                ! We read the exact numbers there if status is 0
+                if (IO_STATUS .eq. 0) exit
+                ! Our guess was too large if we made it here, go to the beginning and reduce our guess by 1, try again
+                rewind INDEX_FILE_UNIT
+                K = K - 1
             end do
-            INDICES_TMP = -1
-            read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP
-            if (minval(INDICES_TMP) .eq. -1) then
-                allocate(TMP(size(minloc(INDICES_TMP))))
-                TMP = minloc(INDICES_TMP)
-                this%group(I)%NUMATOMS = TMP(1)-1
-                allocate(this%group(I)%LOC(this%group(I)%NUMATOMS))
-                this%group(I)%LOC = INDICES_TMP(1:this%group(I)%NUMATOMS)
-                deallocate(TMP)
-            else
-                this%group(I)%LOC = INDICES_TMP
-            end if
+            this%group(I)%NUMATOMS = K
+            allocate(this%group(I)%LOC(this%group(I)%NUMATOMS))
+            this%group(I)%LOC = INDICES_TMP(1:this%group(I)%NUMATOMS)
             deallocate(INDICES_TMP)
             rewind INDEX_FILE_UNIT
         end do
