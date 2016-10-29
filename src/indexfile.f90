@@ -65,7 +65,7 @@ contains
         NGRPS = 0
         do while (IO_STATUS .eq. 0)
             read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
-            NGRPS = merge(NGRPS + 1, NGRPS, index(line, "[") .ne. 0)
+            if (index(line, "[") .ne. 0) NGRPS = NGRPS + 1
         end do
 
         if (allocated(this%group)) deallocate(this%group)
