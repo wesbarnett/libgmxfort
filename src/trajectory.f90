@@ -216,8 +216,6 @@ contains
 
             end do
 
-            deallocate(this%ndx%group)
-
         else
 
             do I = 1, N

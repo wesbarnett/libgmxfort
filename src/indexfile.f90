@@ -134,11 +134,6 @@ contains
         integer :: J
         character (len=10000) :: msg
 
-        if (.not. allocated(this%group)) then
-            call error_stop_program("No groups saved. Did you pass an index group to read()? &
-                & If so, don't specify an index group in Trajectory class getters.")
-        end if
-
         if (size(this%group) .eq. 0) then
             call error_stop_program("No groups found in index file. Did you specify an index file in open()?")
         end if
