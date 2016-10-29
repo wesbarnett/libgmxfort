@@ -133,7 +133,7 @@ contains
         integer :: J
         character (len=10000) :: msg
 
-        if (size(this%group) == 0) then
+        if (size(this%group) .eq. 0) then
             call error_stop_program("No groups found in index file. Did you specify an index file in open()?")
         end if
 
