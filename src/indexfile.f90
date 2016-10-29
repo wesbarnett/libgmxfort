@@ -92,29 +92,38 @@ contains
 
         ! Now finally get all of the indices for each group
         do I = 1, NGRPS
+
             ! Initial guess only how many items are in the group
             K = (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15
             allocate(INDICES_TMP(K))
             IO_STATUS = 5000
+
             do while (IO_STATUS .ne. 0)
+
                 ! Read all the way to the group
                 do J = 1, TITLE_LOC(I)
                     read(INDEX_FILE_UNIT, '(a)', iostat=IO_STATUS) line
                 end do
+
                 ! Attempt to read into array
                 read(INDEX_FILE_UNIT, *, iostat=IO_STATUS) INDICES_TMP(1:K)
+
                 ! We read the exact numbers there if status is 0
                 if (IO_STATUS .eq. 0) exit
+
                 ! Our guess was too large if we made it here, go to the beginning and reduce our guess by 1, try again
                 rewind INDEX_FILE_UNIT
                 K = K - 1
+
             end do
+
             this%group(I)%NUMATOMS = K
-            allocate(this%group(I)%LOC(this%group(I)%NUMATOMS))
-            this%group(I)%LOC = INDICES_TMP(1:this%group(I)%NUMATOMS)
+            allocate(this%group(I)%LOC, source=INDICES_TMP(1:K))
             deallocate(INDICES_TMP)
             rewind INDEX_FILE_UNIT
+
         end do
+
         close(INDEX_FILE_UNIT)
         
     end subroutine indexfile_read
