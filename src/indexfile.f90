@@ -95,7 +95,8 @@ contains
         do I = 1, NGRPS
 
             ! Initial guess only how many items are in the group
-            this%group(I)%NUMATOMS = merge(N, (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15 + 1, N < (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15 + 1)
+            this%group(I)%NUMATOMS = (TITLE_LOC(I+1)-TITLE_LOC(I)-1)*15 + 1
+            if (N < this%group(I)%NUMATOMS) this%group(I)%NUMATOMS = N 
             IO_STATUS = 5000
 
             do while (IO_STATUS .ne. 0)
