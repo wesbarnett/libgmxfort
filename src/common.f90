@@ -18,6 +18,8 @@
 
 module gmxfort_common
 
+    use, intrinsic :: iso_fortran_env
+
     implicit none
     public
 
@@ -27,9 +29,9 @@ contains
 
         character (len=*), intent(in) :: message
 
-            write(0,*)
-            write(0,'(a, a)') "ERROR: ", message
-            write(0,*)
+            write(error_unit,*)
+            write(error_unit,'(a, a)') "ERROR: ", message
+            write(error_unit,*)
             call abort()
 
     end subroutine error_stop_program

@@ -1,5 +1,6 @@
 module subs
 
+    use, intrinsic :: iso_fortran_env
 
     interface check
         module procedure check_int, check_real, check_array, check_array_2d
@@ -19,7 +20,7 @@ contains
         total = total + 1
         passed = passed + I
 
-        write(0, '(a,i2,a,a)') "TEST ", total, ": ", passfail(I)
+        write(output_unit, '(a,i2,a,a)') "TEST ", total, ": ", passfail(I)
 
     end subroutine do_output
 
@@ -227,12 +228,12 @@ program test
     call check(x, ans, passed, total)
     call trj%close()
 
-    write(0,*)
-    write(0,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
-    write(0,*)
+    write(output_unit,*)
+    write(output_unit,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
+    write(output_unit,*)
 
     if (passed .ne. total) then
-        write(0, '(a)') "WARNING: Some tests failed!"
+        write(output_unit, '(a)') "WARNING: Some tests failed!"
         call abort()
     end if
 

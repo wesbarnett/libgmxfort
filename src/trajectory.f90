@@ -149,9 +149,9 @@ contains
         xd_c = xdrfile_open(filename,"r")
         call c_f_pointer(xd_c, this % xd)
 
-        write(0,'(a)') "Opened "//trim(filename)//" for reading."
-        write(0,'(i0,a)') this%NUMATOMS, " atoms present in system."
-        write(0,'(i0,a)') this%NFRAMES, " frames present in trajectory file."
+        write(error_unit,'(a)') "Opened "//trim(filename)//" for reading."
+        write(error_unit,'(i0,a)') this%NUMATOMS, " atoms present in system."
+        write(error_unit,'(i0,a)') this%NFRAMES, " frames present in trajectory file."
 
     end subroutine trajectory_open
 
@@ -192,7 +192,7 @@ contains
         if (allocated(this%frameArray)) deallocate(this%frameArray)
         allocate(this%frameArray(N))
 
-        write(0,*)
+        write(error_unit,*)
 
         if (present(ndxgrp)) then
 
@@ -242,7 +242,7 @@ contains
     subroutine print_frames_saved(I)
 
         integer, intent(in) :: I
-        write(0,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frames saved: ", I
+        write(error_unit,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frames saved: ", I
 
     end subroutine print_frames_saved
 
@@ -252,7 +252,7 @@ contains
         class(Trajectory), intent(inout) :: this
 
         if (xdrfile_close(this % xd) .eq. 0) then
-            write(0,'(a)') "Closed xtc file."
+            write(error_unit,'(a)') "Closed xtc file."
         else
             call error_stop_program("Problem closing xtc file.")
         end if
