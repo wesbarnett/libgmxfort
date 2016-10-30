@@ -1,5 +1,6 @@
 ! Example program for use with libgmxfort
 ! Calculates the dihedral angles of some chain (going down the chain)
+! Several different examples of using the library
 
 program angles
 
@@ -9,6 +10,8 @@ program angles
     implicit none
 
     character (len=*), parameter :: index_grp = "Site"
+    character (len=*), parameter :: xtcfile = "traj.xtc"
+    character (len=*), parameter :: ndxfile = "index.ndx"
 
     type(Trajectory) :: trj
     integer :: I, J, U, N
@@ -19,7 +22,9 @@ program angles
     real(8), dimension(3) :: a, b, c, d
     real(8) :: box(3,3)
 
-    call trj%read("traj.xtc", "index.ndx")
+    ! EXAMPLE 1
+    ! Read in all frames
+    call trj%read(xtcfile, ndxfile)
 
     NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
@@ -51,9 +56,10 @@ program angles
 
     deallocate(ang)
 
-
-    ! Alternative method, only saving the "Site" group
-    call trj%read("traj.xtc", "index.ndx", index_grp)
+    ! EXAMPLE 2
+    ! Read in all frames, only saving the "Site" group
+    ! (instead of accessing the Site group from the entire atom list)
+    call trj%read(xtcfile, ndxfile, index_grp)
 
     NSITES = trj%natoms()
     NANGLES = NSITES - 3
@@ -85,9 +91,9 @@ program angles
 
     deallocate(ang)
 
-
-    ! Another method, using read_next()
-    call trj%open("traj.xtc", "index.ndx")
+    ! EXAMPLE 3
+    ! Using read_next(), one frame at a time
+    call trj%open(xtcfile, ndxfile)
 
     NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
@@ -121,9 +127,9 @@ program angles
 
     deallocate(ang)
 
-
-    ! Using read_next(), performing calculations in chunks
-    call trj%open("traj.xtc", "index.ndx")
+    ! EXAMPLE 4
+    ! Using read_next() with 10 frames at a time
+    call trj%open(xtcfile, ndxfile)
 
     NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
@@ -163,8 +169,10 @@ program angles
 
     deallocate(ang)
 
-    ! Using read_next(), performing calculations in chunks
-    call trj%open("traj.xtc", "index.ndx")
+    ! EXAMPLE 5
+    ! Using read_next(), 10 frames at a time
+    ! Only saving the "Site" group
+    call trj%open(xtcfile, ndxfile)
 
     NSITES = trj%natoms(index_grp)
     NANGLES = NSITES - 3
