@@ -102,7 +102,7 @@ the atom number is the second argument.
     myatom = trj%x(1, 1)
 ```
 
-**NOTE**: Fortran uses one-based indexing, and that convention is retained here.
+**Note**: Fortran uses one-based indexing, and that convention is retained here.
 
 If you read in an index file, you can get atom coordinates in relationship to
 that. The following gets the fifth atom in index group `C` in the `10`th frame:
