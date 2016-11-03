@@ -19,7 +19,8 @@ where the modules files are (by default at `/usr/include`).
 
 To use the library always put `use gmxfort_trajectory` for using the
 `Trajectory` class and `use gmxfort_utils` for using any of the other utilities.
-There is an example in the `example` folder on how to do this.
+There is an example in the `example` folder on how to do this. Additionally
+[sasa](https://github.com/wesbarnett/sasa) uses libgmxfort.
 
 Typically you will open a trajectory file (and optionally a corresponding index
 file). Then you will read in the entire trajectory file at once, or you can read
