@@ -149,6 +149,7 @@ contains
 
         end do
 
+        indexfile_get = -1
         write(msg, '(a)') trim(group_name)//" is not in index file. The groups available are:"
         do J = 1, size(this%group)
             write(msg,'(a10,a,i0,a)') this%group(J)%title, " (", this%group(J)%NUMATOMS, ")"
