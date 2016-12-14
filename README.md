@@ -5,17 +5,25 @@ trajectory files (.xtc) and index files (.ndx).
 
 ## Requirements
 
-[xdrfile](https://github.com/wesbarnett/libxdrfile) is required.
+[xdrfile](https://github.com/wesbarnett/libxdrfile)>=2.1.1 is required.
 
 ## Installation
 
     $ make
     # make install
 
+Use `PREFIX` to choose the installation directory. The following installs the
+library to `/home/wes/gmxfort`.
+
+    $ make PREFIX=/home/wes/gmxfort install
+
 ## Usage
 
 Compile your program with `-lgmxfort`. You may also need to use `-I` to point to
-where the modules files are (by default at `/usr/include`).
+where the modules files are even with all of the right environment variables set
+(by default at `/usr/local/include`). A pkg-config file is included, so that can
+be used in your program compilations. You may need to set `PKG_CONFIG_PATH` to
+find the file (by default in the directory `/usr/local/lib/pkgconfig`)
 
 To use the library always put `use gmxfort_trajectory` for using the
 `Trajectory` class and `use gmxfort_utils` for using any of the other utilities.

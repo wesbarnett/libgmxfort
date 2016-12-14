@@ -1,13 +1,13 @@
 .PHONY: all install clean test
-PREFIX  ?= /usr
+PREFIX  ?= /usr/local
 NAME     = libgmxfort
 INCLUDE  = ${DESTDIR}${PREFIX}/include
 LIBDIR   = ${DESTDIR}${PREFIX}/lib
 LICDIR   = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 SOURCES := $(wildcard src/*.f90)
 OBJECTS := $(SOURCES:src/%.f90=%.o)
-CFLAGS  += -fPIC -shared  -Wall
-LDFLAGS += -lxdrfile
+CFLAGS  += -fPIC -shared  -Wall `pkg-config --cflags libxdrfile`
+LDFLAGS += `pkg-config --libs libxdrfile`
 
 libgmxfort.so: common.o indexfile.o trajectory.o utils.o
 	@mkdir -p lib/pkgconfig
