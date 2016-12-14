@@ -16,7 +16,7 @@ libgmxfort.so: common.o indexfile.o trajectory.o utils.o
 
 %.o: src/%.f90
 	@mkdir -p include
-	@gfortran -c -o src/$@ $< -Jinclude ${CFLAGS} ${LDFLAGS}
+	@gfortran -c -o src/$@ $< -J./include ${CFLAGS} ${LDFLAGS}
 
 test: ${NAME}.so
 	mkdir -p tests
