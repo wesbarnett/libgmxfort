@@ -9,5 +9,5 @@ Description: Fortran toolkit for analyzing GROMACS simulations
 Version: 0.3
 
 Requires:
-Libs: -L${libdir} -L${sharedlibdir} -lxdrfile -lgmxfort
+Libs: -L${libdir} -L${sharedlibdir} -lgmxfort
 Cflags: -I${includedir}
