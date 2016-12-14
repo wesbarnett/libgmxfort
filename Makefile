@@ -8,6 +8,7 @@ SOURCES := $(wildcard src/*.f90)
 OBJECTS := $(SOURCES:src/%.f90=%.o)
 CFLAGS  += -fPIC -shared  -Wall `pkg-config --cflags libxdrfile`
 LDFLAGS += `pkg-config --libs libxdrfile`
+VERSION := $(shell git describe --tags)
 
 ${NAME}.so: ${OBJECTS} ${NAME}.pc
 	@mkdir -p lib
@@ -23,7 +24,7 @@ indexfile.o: common.o
 
 ${NAME}.pc:
 	@mkdir -p lib/pkgconfig
-	@sed 's.MYPREFIX.${PREFIX}.g' src/pkgconfig/$@.in > lib/pkgconfig/$@
+	@sed -e 's.MYPREFIX.${PREFIX}.g' -e 'sxMYVERSIONx${VERSION}xg' src/pkgconfig/$@.in > lib/pkgconfig/$@
 
 test: ${NAME}.so
 	@mkdir -p tests
