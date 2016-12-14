@@ -30,4 +30,4 @@ install: ${NAME}.so
 	@install -Dm644 LICENSE  -t ${LICDIR}
 
 clean:
-	@rm -fr src/*.o include lib tests/*.mod tests
+	@rm -fr src/*.o include lib tests/*.mod tests *.mod
