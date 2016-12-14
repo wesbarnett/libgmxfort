@@ -1,16 +1,18 @@
 .PHONY: all install clean test
 PREFIX  ?= /usr/local
 NAME     = libgmxfort
+PREREQ   = libxdrfile
 INCLUDE  = ${DESTDIR}${PREFIX}/include
 LIBDIR   = ${DESTDIR}${PREFIX}/lib
 LICDIR   = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 SOURCES := $(wildcard src/*.f90)
 OBJECTS := $(SOURCES:src/%.f90=%.o)
-CFLAGS  += -fPIC -shared  -Wall `pkg-config --cflags libxdrfile`
-LDFLAGS += `pkg-config --libs libxdrfile`
+CFLAGS  += -fPIC -shared  -Wall `pkg-config --cflags ${PREREQ}`
+LDFLAGS += `pkg-config --libs ${PREREQ}`
 VERSION := $(shell git describe --tags)
 
 ${NAME}.so: ${OBJECTS} ${NAME}.pc
+	@pkg-config --exists ${PREREQ} --print-errors
 	@mkdir -p lib
 	@gfortran -o lib/$@ src/*.o ${CFLAGS} ${LDFLAGS}
 
