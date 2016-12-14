@@ -22,5 +22,5 @@ install: libgmxfort.so
 	@install -Dm644 LICENSE  -t ${LICDIR}
 
 clean:
-	@rm src/*.o include/*.mod lib/*.so tests/*.mod tests/test
+	@rm -f src/*.o include/*.mod lib/*.so tests/*.mod tests/test
 	@rmdir lib include
