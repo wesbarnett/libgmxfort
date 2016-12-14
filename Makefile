@@ -10,7 +10,8 @@ CFLAGS  += -fPIC -shared  -Wall
 LDFLAGS += -lxdrfile
 
 libgmxfort.so: common.o indexfile.o trajectory.o utils.o
-	@mkdir -p lib 
+	@mkdir -p lib/pkgconfig
+	@sed 's.MYPREFIX.${PREFIX}.g' src/libgmxfort.pc.in > lib/pkgconfig/libgmxfort.pc
 	@gfortran -o lib/$@ src/*.o ${CFLAGS} ${LDFLAGS}
 
 %.o: src/%.f90
@@ -18,14 +19,15 @@ libgmxfort.so: common.o indexfile.o trajectory.o utils.o
 	@gfortran -c -o src/$@ $< -Jinclude ${CFLAGS} ${LDFLAGS}
 
 test: ${NAME}.so
-	@gfortran -o tests/$@ tests/test.f90 lib/$< -Iinclude -Jtests 
+	mkdir -p tests
+	@gfortran -o tests/$@ src/tests/test.f90 lib/$< -Iinclude -Jtests 
 	@./tests/test
 
 install: ${NAME}.so
 	@install -Dm644 include/* -t ${INCLUDE}
-	@install -Dm755 lib/* -t ${LIBDIR}
+	@install -Dm755 lib/*.so -t ${LIBDIR}
+	@install -Dm755 lib/pkgconfig/* -t ${LIBDIR}/pkgconfig
 	@install -Dm644 LICENSE  -t ${LICDIR}
 
 clean:
-	@rm -f src/*.o include/*.mod lib/*.so tests/*.mod tests/test
-	@rmdir lib include
+	@rm -fr src/*.o include lib tests/*.mod tests
