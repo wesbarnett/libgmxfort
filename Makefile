@@ -11,7 +11,7 @@ LDFLAGS += -lxdrfile
 
 libgmxfort.so: common.o indexfile.o trajectory.o utils.o
 	@mkdir -p lib/pkgconfig
-	@sed 's.MYPREFIX.${PREFIX}.g' src/libgmxfort.pc.in > lib/pkgconfig/libgmxfort.pc
+	@sed 's.MYPREFIX.${PREFIX}.g' src/pkgconfig/libgmxfort.pc.in > lib/pkgconfig/libgmxfort.pc
 	@gfortran -o lib/$@ src/*.o ${CFLAGS} ${LDFLAGS}
 
 %.o: src/%.f90
