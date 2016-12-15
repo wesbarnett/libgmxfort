@@ -7,7 +7,7 @@ set ( @CMAKE_PROJECT_NAME@_VERSION @VERSION@ )
 set ( @CMAKE_PROJECT_NAME@_FOUND TRUE )
 
 find_path( @CMAKE_PROJECT_NAME@_INCLUDE_DIRS
-    NAMES "xdrfile.h" "xdrfile_xtc.h"
+    NAMES "gmxfort_trajectory.mod" "gmxfort_common.mod" "gmxfort_index.mod"
     HINTS "@INSTALL_INCLUDEDIR@"
 )
 
