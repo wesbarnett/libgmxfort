@@ -1,13 +1,12 @@
 prefix=MYPREFIX
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-sharedlibdir=${libdir}
+libdir=${prefix}/lib
 includedir=${prefix}/include
 
 Name: libgmxfort
 Description: Fortran toolkit for analyzing GROMACS simulations
+URL: https://github.com/wesbarnett/libgmxfort
 Version: MYVERSION
-
-Requires:
-Libs: -L${libdir} -L${sharedlibdir} -lgmxfort
+Requires.private: xdrfile>=2.1.1
+Libs: -L${libdir} -lgmxfort
+Cflags.private: -fPIC -shared
 Cflags: -I${includedir}
