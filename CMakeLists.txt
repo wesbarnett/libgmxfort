@@ -76,7 +76,7 @@ install ( FILES
 
 # pkg-config
 configure_file(
-   "${CMAKE_CURRENT_SOURCE_DIR}/lib${CMAKE_PROJECT_NAME}.pc.cmake.in"
+   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/lib${CMAKE_PROJECT_NAME}.pc.cmake.in"
    "${CMAKE_CURRENT_BINARY_DIR}/lib${CMAKE_PROJECT_NAME}.pc"
    @ONLY
 )
