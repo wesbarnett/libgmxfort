@@ -7,7 +7,7 @@ LIBDIR   = ${DESTDIR}${PREFIX}/lib
 LICDIR   = ${DESTDIR}${PREFIX}/share/licenses/libgmxfort
 SOURCES := $(wildcard src/*.f90)
 OBJECTS := $(SOURCES:src/%.f90=%.o)
-CFLAGS  += -fPIC -shared  -Wall `pkg-config --cflags ${PREREQ}`
+CFLAGS  += `pkg-config --cflags ${PREREQ}` -Wall
 LDFLAGS += `pkg-config --libs ${PREREQ}`
 VERSION := $(shell git describe --tags)
 
