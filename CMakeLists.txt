@@ -48,7 +48,7 @@ set_target_properties ( ${CMAKE_PROJECT_NAME}
   Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/include" )
 
 install ( TARGETS gmxfort LIBRARY DESTINATION lib )
-install ( DIRECTORY "${CMAKE_BINARY_DIR}/include" DESTINATION "${INSTALL_INCLUDEDIR}" )
+install ( DIRECTORY "${CMAKE_BINARY_DIR}/include" DESTINATION "${CMAKE_PREFIX_PATH}" )
 
 #-----------------------------------------------------
 # Publicize installed location to other CMake projects
