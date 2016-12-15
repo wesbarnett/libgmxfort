@@ -6,6 +6,6 @@ Name: libgmxfort
 Description: Fortran toolkit for analyzing GROMACS simulations
 URL: https://github.com/wesbarnett/libgmxfort
 Version: MYVERSION
-Requires.private: xdrfile>=2.1.2
+Requires.private: libxdrfile>=2.1.2
 Libs: -L${libdir} -lgmxfort
 Cflagse: -fPIC -shared -I${includedir}
