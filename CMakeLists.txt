@@ -91,6 +91,7 @@ install ( FILES
 #-----------------------------------------------------
 enable_testing ()
 add_executable ( dotest src/tests/test.f90 )
+include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include )
 target_link_libraries ( dotest gmxfort )
 configure_file(src/tests/test.xtc ${CMAKE_CURRENT_BINARY_DIR}/test.xtc COPYONLY)
 configure_file(src/tests/test.ndx ${CMAKE_CURRENT_BINARY_DIR}/test.ndx COPYONLY)
