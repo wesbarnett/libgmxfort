@@ -1,26 +1,29 @@
 # libgmxfort
 
-This is a Fortran library for reading in an analyzing GROMACS compressed
-trajectory files (.xtc) and index files (.ndx). 
+This is a modern Fortran library for reading in an analyzing GROMACS compressed
+trajectory files (.xtc) and index files (.ndx). Some helpful utilities functions
+are also included like periodic boundary condition and distance functions. It
+uses an object-oriented philosophy for reading in, storing, and retrieving
+simulation data for analysis.
 
 ## Requirements
 
-[xdrfile](https://github.com/wesbarnett/libxdrfile)>=2.1.2 is required.
+[xdrfile](https://github.com/wesbarnett/libxdrfile>=2.1.2) is required.
+
+## Compilation
+
+```bash
+    mkdir build
+    cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+    make
+```
 
 ## Installation
 
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ make
-    # make install
-
-By default he library is installed to `/usr/local/lib` and headers are installed
-to `/usr/local/include`. To choose a specific directory for installation you can
-use `-DCMAKE_INSTALL_PREFIX` with cmake. For example, the following installs the
-library to `/home/wes/gmxfort`.
-
-    $ cmake .. -DCMAKE_INSTALL_PREFIX=/home/wes/gmxfort
+```bash
+    make install
+```
 
 ## Usage
 
