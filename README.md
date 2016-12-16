@@ -1,6 +1,7 @@
 # libgmxfort
 
-This is a modern Fortran library for reading in an analyzing GROMACS compressed
+This is a modern Fortran library for reading in an analyzing
+[GROMACS](http://www.gromacs.org/) compressed
 trajectory files (.xtc) and index files (.ndx). Some helpful utilities functions
 are also included like periodic boundary condition and distance functions. It
 uses an object-oriented philosophy for reading in, storing, and retrieving
