@@ -5,5 +5,5 @@ Name: lib@CMAKE_PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 URL: @PROJECT_URL@
 Version: @PROJECT_VERSION@
-Libs: -L${libdir} -lxdrfile
+Libs: -L${libdir} -lgmxfort
 Cflags: -I${includedir}
