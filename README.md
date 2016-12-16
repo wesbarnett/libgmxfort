@@ -1,5 +1,9 @@
 # libgmxfort
 
+[![Arch
+Version](https://img.shields.io/badge/Arch-0.4.2-brightgreen.svg)](https://git.archlinux.org/svntogit/community.git/tree/trunk/PKGBUILD?h=packages/libgmxfort)
+[![License](https://img.shields.io/github/license/wesbarnett/libgmxfort.svg)](https://github.com/wesbarnett/libgmxfort/blob/master/LICENSE)
+
 This is a modern Fortran library for reading in an analyzing
 [GROMACS](http://www.gromacs.org/) compressed
 trajectory files (.xtc) and index files (.ndx). Some helpful utilities functions
