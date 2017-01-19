@@ -14,16 +14,16 @@ simulation data for analysis.
 ## Compilation
 
 ```bash
-    mkdir build
-    cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
-    make
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make
 ```
 
 ## Installation
 
 ```bash
-    make install
+make install
 ```
 
 ## Usage
@@ -59,13 +59,10 @@ The simplest way to use this library is to construct a `Trajectory` object and
 then use the `read()` method:
 
 ```fortran
-    use gmxfort_trajectory
-
-    implicit none
-
-    type(Trajectory) :: trj
-
-    call trj%read("traj.xtc")
+use gmxfort_trajectory
+implicit none
+type(Trajectory) :: trj
+call trj%read("traj.xtc")
 ```
 
 The `read()` method opens the xtc file, reads in all information, and then
@@ -76,7 +73,7 @@ If you have a corresponding index file you would add a second argument to
 `open`:
 
 ```fortran
-    call trj%read("traj.xtc", "index.ndx")
+call trj%read("traj.xtc", "index.ndx")
 ```
 
 If you want to read in the trajectory file in frame-by-frame use `read_next()`
@@ -84,16 +81,16 @@ instead of `read()`. To use this, you must additionally open and close the xtc
 file on your own. By default it reads in one frame:
 
 ```fortran
-    integer :: n
-    call trj%open("traj.xtc", "index.ndx")
-    n = trj%read_next()
-    call trj%close()
+integer :: n
+call trj%open("traj.xtc", "index.ndx")
+n = trj%read_next()
+call trj%close()
 ```
 
 To read in more than one, specify an argument. The following reads in 10 frames:
 
 ```fortran
-    n = trj%read_next(10)
+n = trj%read_next(10)
 ```
 
 `read_next()` returns the number of frames actually read in. It is a function,
@@ -101,24 +98,24 @@ and not a subroutine. This is useful for using it with a `do while` loop. For
 example:
 
 ```fortran
-    use gmxfort_trajectory
+use gmxfort_trajectory
 
-    implicit none
+implicit none
 
-    type(Trajectory) :: trj
-    integer :: i, n
+type(Trajectory) :: trj
+integer :: i, n
 
-    call trj%open("traj.xtc", "index.ndx")
+call trj%open("traj.xtc", "index.ndx")
 
-    n = trj%read_next(10)
-    do while (n > 0)
-        do i = 1, n
-            ! do some things with the frames read in
-        end do
-        n = trj%read_next(10)
+n = trj%read_next(10)
+do while (n > 0)
+    do i = 1, n
+        ! do some things with the frames read in
     end do
+    n = trj%read_next(10)
+end do
 
-    call trj%close()
+call trj%close()
 ```
 
 After calling `read()` or `read_next()` every atom's coordinates are accessible
@@ -127,9 +124,9 @@ the first frame you would do the following. The frame is the first argument and
 the atom number is the second argument. 
 
 ```fortran
-    real :: myatom(3)
-    ! ...
-    myatom = trj%x(1, 1)
+real :: myatom(3)
+! ...
+myatom = trj%x(1, 1)
 ```
 
 **Note**: Fortran uses one-based indexing, and that convention is retained here.
@@ -138,7 +135,7 @@ If you read in an index file, you can get atom coordinates in relationship to
 that. The following gets the fifth atom in index group `C` in the `10`th frame:
 
 ```fortran
-    myatom = trj%x(10, 5, "C")
+myatom = trj%x(10, 5, "C")
 ```
 
 **Note**: If you have more than one group in your index file with the same name,
@@ -151,33 +148,33 @@ can always get the number of frames in a trajectory file object with the
 `nframes` member:
 
 ```fortran
-    integer :: n
-    ! ...
-    n = trj%nframes
+integer :: n
+! ...
+n = trj%nframes
 ```
 
 You can also get the number of atoms with the `natoms()` method:
 
 ```fortran
-    integer :: n
-    ! ...
-    n = trj%natoms()
+integer :: n
+! ...
+n = trj%natoms()
 ```
 
 If you want to know how many atoms are in an index group include the group name
 as an argument. In this example the group name is "C":
 
 ```fortran
-    n = trj%natoms("C")
+n = trj%natoms("C")
 ```
 
 To get the box coordinates, use `box`. The following gets the box of the `2`nd
 frame:
 
 ```fortran
-    real :: mybox(3,3)
-    ! ...
-    mybox = trj%box(2)
+real :: mybox(3,3)
+! ...
+mybox = trj%box(2)
 ```
 
 You can also get the simulation time and step corresponding with a frame you
@@ -185,17 +182,17 @@ read in, using `time` and `step`, respectively. The following get the time assoc
 with the first frame read in:
 
 ```fortran
-    real :: mytime
-    ! ...
-    mytime = trj%time(1)
+real :: mytime
+! ...
+mytime = trj%time(1)
 ```
 
 And now the step for the same:
 
 ```fortran
-    integer :: mystep
-    ! ...
-    mystep = trj%step(1)
+integer :: mystep
+! ...
+mystep = trj%step(1)
 ```
 
 As shown above, the most common use of this library is to use `read()` or
@@ -206,7 +203,7 @@ argument. To save memory, you can save just a specific index group with
 
 
 ```fortran
-    trj%read(xtcfile, ndxfile, "C")
+trj%read(xtcfile, ndxfile, "C")
 ```
 
 If you do this, you only have access to the group above, and you never should
