@@ -9,7 +9,7 @@ simulation data for analysis.
 
 ## Requirements
 
-[xdrfile](https://github.com/wesbarnett/libxdrfile>=2.1.2) is required.
+[xdrfile](https://github.com/wesbarnett/libxdrfile)>=2.1.2 is required.
 
 ## Compilation
 
