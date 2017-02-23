@@ -83,8 +83,8 @@ program test
 
     type(Trajectory) :: trj
     real(8), parameter :: PI = 2.0d0*acos(0.0d0)
-    character (len=:), parameter :: xtcfile = "test.xtc"
-    character (len=:), parameter :: ndxfile = "test.ndx"
+    character (len=8), parameter :: xtcfile = "test.xtc"
+    character (len=8), parameter :: ndxfile = "test.ndx"
     real :: x(3), y(3), z(3), w(3), ans(3), box(3,3), ans_box(3,3), b, c
     integer :: passed = 0, total = 0, a, ans_val
 
