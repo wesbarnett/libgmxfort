@@ -1,5 +1,5 @@
 set ( TEST_SRC "gmxfort_tests.f90" )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/../../include )
+include_directories( ${CMAKE_BINARY_DIR}/include )
 add_library ( gmxfort_tests SHARED ${TEST_SRC} )
 target_link_libraries ( gmxfort_tests ${CMAKE_PROJECT_NAME} )
 
