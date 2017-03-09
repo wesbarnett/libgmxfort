@@ -62,10 +62,10 @@ find the file (by default in the directory `/usr/local/lib/pkgconfig`)
 
 ### API
 
-To use the library always put `use gmxfort_trajectory` for using the
-`Trajectory` class and `use gmxfort_utils` for using any of the other utilities.
-There is an example in the `example` folder on how to do this. Additionally
-[sasa](https://github.com/wesbarnett/sasa) uses libgmxfort.
+To use the library always put `use gmxfort_trajectory` for in order to use the
+`Trajectory` class and `use gmxfort_utils` in order to use any of the other
+utilities.  There is an example in the `example` folder on how to do this.
+Additionally [sasa](https://github.com/wesbarnett/sasa) uses libgmxfort.
 
 Typically you will open a trajectory file (and optionally a corresponding index
 file). Then you will read in the entire trajectory file at once, or you can read
@@ -85,12 +85,14 @@ The `read()` method opens the xtc file, reads in all information, and then
 closes it. The `trj` object in this example now stores all of the coordinates and
 information from the .xtc file.
 
-If you have a corresponding index file you would add a second argument to
+If you have a corresponding index file, you can add a second argument to
 `open`:
 
 ```fortran
 call trj%read("traj.xtc", "index.ndx")
 ```
+
+Now information regarding the index groups is stored in memory.
 
 If you want to read in the trajectory file in frame-by-frame use `read_next()`
 instead of `read()`. To use this, you must additionally open and close the xtc
