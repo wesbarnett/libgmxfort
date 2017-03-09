@@ -47,7 +47,7 @@ set_target_properties ( ${CMAKE_PROJECT_NAME}
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/include" )
 
-install ( TARGETS gmxfort LIBRARY DESTINATION lib )
+install ( TARGETS ${CMAKE_PROJECT_NAME} LIBRARY DESTINATION lib )
 install ( DIRECTORY "${CMAKE_BINARY_DIR}/include" DESTINATION "${CMAKE_INSTALL_PREFIX}" )
 
 #-----------------------------------------------------
@@ -93,7 +93,7 @@ enable_testing ()
 file ( GLOB TEST_SRC "src/tests/gmxfort_tests.f90" )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include )
 add_library ( gmxfort_tests SHARED ${TEST_SRC} )
-target_link_libraries ( gmxfort_tests gmxfort)
+target_link_libraries ( gmxfort_tests ${CMAKE_PROJECT_NAME} )
 
 add_executable ( xtcfile src/tests/xtcfile.f90 )
 target_link_libraries ( xtcfile gmxfort_tests )
