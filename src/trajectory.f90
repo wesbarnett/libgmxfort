@@ -119,8 +119,6 @@ contains
         logical :: ex
         integer :: EST_NFRAMES
         type(C_PTR) :: OFFSETS_C
-!       TODO: Save these offsets for later use so one can go straight to the frame desired?
-!       integer(C_INT64_T), pointer :: OFFSETS(:)
 
         inquire(file=trim(filename_in), exist=ex)
 
@@ -140,7 +138,6 @@ contains
         if (present(ndxfile)) call this%ndx%read(ndxfile, this%NUMATOMS)
 
         ! Get total number of frames in the trajectory file
-!       call c_f_pointer(OFFSETS_C, OFFSETS, [NFRAMES])
         if (read_xtc_n_frames(filename, this%NFRAMES, EST_NFRAMES, OFFSETS_C) .ne. 0) then
             call error_stop_program("Problem getting number of frames in xtc file.")
         end if
