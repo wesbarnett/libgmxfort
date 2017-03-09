@@ -33,8 +33,7 @@ message(STATUS "Found xdrfile include dirs at: ${xdrfile_INCLUDE_DIRS}")
 # -------------------------
 # Create library
 # -------------------------
-file ( GLOB SRCS "src/*.f90" )
-add_library ( ${CMAKE_PROJECT_NAME} SHARED ${SRCS} )
+add_library ( ${CMAKE_PROJECT_NAME} SHARED src/common.f90 src/indexfile.f90 src/trajectory.f90 src/utils.f90 )
 target_link_libraries ( ${CMAKE_PROJECT_NAME} ${xdrfile_LIBRARIES} )
 target_include_directories ( ${CMAKE_PROJECT_NAME} PUBLIC ${xdrfile_INCLUDE_DIRS} )
 
@@ -90,29 +89,20 @@ install ( FILES
 # Tests
 #-----------------------------------------------------
 enable_testing ()
-file ( GLOB TEST_SRC "src/tests/gmxfort_tests.f90" )
+set ( TEST_SRC "src/tests/gmxfort_tests.f90" )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include )
 add_library ( gmxfort_tests SHARED ${TEST_SRC} )
 target_link_libraries ( gmxfort_tests ${CMAKE_PROJECT_NAME} )
 
-add_executable ( xtcfile src/tests/xtcfile.f90 )
-target_link_libraries ( xtcfile gmxfort_tests )
+foreach(TESTNAME xtcfile ndxfile ndxfile_grp read_next utils)
+    add_executable ( ${TESTNAME} src/tests/${TESTNAME}.f90 )
+    target_link_libraries ( ${TESTNAME} gmxfort_tests )
+endforeach(TESTNAME)
+
 add_test ( "Read_xtcfile" xtcfile )
-
-add_executable ( ndxfile src/tests/ndxfile.f90 )
-target_link_libraries ( ndxfile gmxfort_tests )
 add_test ( "Read_xtcfile_and_ndxfile" ndxfile )
-
-add_executable ( ndxfile_grp src/tests/ndxfile_grp.f90 )
-target_link_libraries ( ndxfile_grp gmxfort_tests )
 add_test ( "Read_ndx_grp" ndxfile_grp )
-
-add_executable ( read_next src/tests/read_next.f90 )
-target_link_libraries ( read_next gmxfort_tests )
 add_test ( "Read_next" read_next )
-
-add_executable ( utils src/tests/utils.f90 )
-target_link_libraries ( utils gmxfort_tests )
 add_test ( "Utils" utils )
 
 configure_file(src/tests/test.xtc ${CMAKE_CURRENT_BINARY_DIR}/test.xtc COPYONLY)
