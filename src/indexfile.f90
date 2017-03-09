@@ -128,7 +128,7 @@ contains
                     if (this%group(I)%title .eq. this%group(J)%title) then
                         write(error_unit,*)
                         write(error_unit,'(a, a, a)') "LIBGMXFORT WARNING: Index group ", this%group(I)%title, &
-                            " specified more than once in index file."
+                            " was specified more than once in index file."
                         write(error_unit,*)
                     end if
                 end if
