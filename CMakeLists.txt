@@ -44,6 +44,13 @@ string ( TOLOWER ${CMAKE_PROJECT_NAME} PACKAGE_NAME )
 set ( PACKAGE_VERSION "${PACKAGE_NAME}-${VERSION}" )
 
 # -------------------------
+# Build type
+# -------------------------
+if ( NOT CMAKE_BUILD_TYPE )
+    set ( CMAKE_BUILD_TYPE "Release" )
+endif()
+
+# -------------------------
 # Find xdrfile
 # -------------------------
 find_package ( xdrfile REQUIRED )
