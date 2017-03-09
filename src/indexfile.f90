@@ -114,6 +114,7 @@ contains
 
             end do
 
+            ! Specifying array bounds for array to be allocated is not required for F2008 but is required for F2003
             allocate(this%group(I)%LOC(1:this%group(I)%NUMATOMS), source=INDICES_TMP(1:this%group(I)%NUMATOMS))
 
         end do
