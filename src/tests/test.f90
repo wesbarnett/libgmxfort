@@ -1,83 +1,8 @@
-module subs
-
-    use, intrinsic :: iso_fortran_env
-
-    interface check
-        module procedure check_int, check_real, check_array, check_array_2d
-    end interface check
-
-contains
-
-    subroutine do_output(total, passed, test_result)
-
-        implicit none
-        integer, intent(inout) :: total, passed
-        logical, intent(in) :: test_result
-        integer :: I
-        character (len=6) :: passfail(0:1) = ["FAILED", "PASSED"]
-        
-        I = merge(1, 0, test_result)
-        total = total + 1
-        passed = passed + I
-
-        write(output_unit, '(a,i2,a,a)') "TEST ", total, ": ", passfail(I)
-
-    end subroutine do_output
-
-    subroutine check_int(x, y, passed, total)
-
-        implicit none
-
-        integer, intent(inout) :: total, passed
-        integer, intent(in) :: x, y
-
-        call do_output(total, passed, x .eq. y)
-
-    end subroutine check_int
-
-    subroutine check_real(x, y, passed, total)
-
-        implicit none
-
-        integer, intent(inout) :: total, passed
-        real, intent(in) :: x, y
-        real :: tol = 1e-4
-
-        call do_output(total, passed, abs(x-y) .le. tol)
-
-    end subroutine check_real
-
-    subroutine check_array(x, y, passed, total)
-
-        implicit none
-
-        integer, intent(inout) :: total, passed
-        real, intent(in) :: x(:), y(:)
-        real :: tol = 1e-4
-
-        call do_output(total, passed, all(abs(x - y) .le. tol))
-
-    end subroutine check_array
-
-    subroutine check_array_2d(x, y, passed, total)
-
-        implicit none
-
-        integer, intent(inout) :: total, passed
-        real, intent(in) :: x(:,:), y(:,:)
-        real :: tol = 1e-6
-
-        call do_output(total, passed, all(abs(x - y) .le. tol))
-
-    end subroutine check_array_2d
-
-end module subs
-
 program test
 
     use gmxfort_trajectory
     use gmxfort_utils
-    use subs
+    use gmxfort_tests
 
     implicit none
 
@@ -88,6 +13,7 @@ program test
     real :: x(3), y(3), z(3), w(3), ans(3), box(3,3), ans_box(3,3), b, c
     integer :: passed = 0, total = 0, a, ans_val
 
+    ! Reading xtcfile alone
     call trj%read(xtcfile)
 
     ! TEST 1
@@ -105,6 +31,7 @@ program test
     ans = [4.060, 0.155, 0.262]
     call check(x, ans, passed, total)
 
+    ! Reading xtcfile and ndxfile
     call trj%read(xtcfile, ndxfile)
     ! TEST 4
     x = trj%x(100, 100, "OW")
@@ -142,8 +69,9 @@ program test
     ans_val = 101
     call check(a, ans_val, passed, total) 
 
-    ! TEST 11
+    ! Reading just a selected index group
     call trj%read(xtcfile, ndxfile, "OW")
+    ! TEST 11
     x = trj%x(100, 100)
     ans = [0.115, 1.048, 3.222]
     call check(x, ans, passed, total)
@@ -153,8 +81,9 @@ program test
     ans_val = 4125
     call check(a, ans_val, passed, total) 
 
-    ! TEST 13
+    ! Using read_next()
     call trj%open(xtcfile, ndxfile)
+    ! TEST 13
     a = trj%read_next(100)
     x = trj%x(100, 100)
     ans = [1.455, 0.374, 0.358]
@@ -175,6 +104,7 @@ program test
     call check(a, ans_val, passed, total) 
     call trj%close()
 
+    ! Test utilities
     ! TEST 17
     x = [5.5, 5.5, 3.5]
     box = reshape((/5.0, 0.0, 0.0, &
