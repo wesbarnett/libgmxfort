@@ -18,31 +18,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-cmake_minimum_required ( VERSION 2.8.8 )
-enable_language (Fortran)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-project ( gmxfort NONE )
-
-# Project info
-include ( info )
-
-# Package version
-include ( version )
-
-# Build type
-include ( buildtype )
-
-# Find xdrfile
-include ( xdrfile )
-
-# Create library
-add_subdirectory ( src )
-
-# Publicize installed location to other CMake projects
-include ( public )
-
-# Tests
-enable_testing ()
-add_subdirectory ( src/tests )
+set ( PROJECT_DESCRIPTION "Fortran toolkit for analyzing GROMACS simulations" )
+set ( PROJECT_URL "https://github.com/wesbarnett/libgmxfort" )
+set ( LIBDIR "lib")
+set ( INCLUDEDIR "include")
+set ( INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX}/${LIBDIR} )
+set ( INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX}/${INCLUDEDIR} )

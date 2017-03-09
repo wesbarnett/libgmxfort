@@ -18,31 +18,12 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-cmake_minimum_required ( VERSION 2.8.8 )
-enable_language (Fortran)
-
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-project ( gmxfort NONE )
-
-# Project info
-include ( info )
-
-# Package version
-include ( version )
-
-# Build type
-include ( buildtype )
-
-# Find xdrfile
-include ( xdrfile )
-
-# Create library
-add_subdirectory ( src )
-
-# Publicize installed location to other CMake projects
-include ( public )
-
-# Tests
-enable_testing ()
-add_subdirectory ( src/tests )
+file ( STRINGS "${CMAKE_SOURCE_DIR}/.VERSION" VERSION )
+string( REPLACE "." ";" VERSION_LIST ${VERSION} )
+list(GET VERSION_LIST 0 VERSION_MAJOR)
+list(GET VERSION_LIST 1 VERSION_MINOR)
+list(GET VERSION_LIST 2 VERSION_PATCH)
+set(PROJECT_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+message ( STATUS "CMake build configuration for ${CMAKE_PROJECT_NAME} ${PROJECT_VERSION}" )
+string ( TOLOWER ${CMAKE_PROJECT_NAME} PACKAGE_NAME )
+set ( PACKAGE_VERSION "${PACKAGE_NAME}-${VERSION}" )
