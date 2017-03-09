@@ -1,7 +1,5 @@
 program xtcfile_test
 
-    use gmxfort_trajectory
-    use gmxfort_utils
     use gmxfort_tests
 
     call trj%read(xtcfile)
@@ -21,13 +19,6 @@ program xtcfile_test
     ans = [4.060, 0.155, 0.262]
     call check(x, ans, passed, total)
 
-    write(output_unit,*)
-    write(output_unit,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
-    write(output_unit,*)
-
-    if (passed .ne. total) then
-        write(output_unit, '(a)') "WARNING: Some tests failed!"
-        call abort()
-    end if
+    call finished_tests(passed, total)
 
 end program xtcfile_test

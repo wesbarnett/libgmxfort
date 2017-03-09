@@ -1,7 +1,5 @@
 program ndxfile_grp_test 
 
-    use gmxfort_trajectory
-    use gmxfort_utils
     use gmxfort_tests
 
     ! TEST 1
@@ -15,13 +13,6 @@ program ndxfile_grp_test
     ans_val = 4125
     call check(a, ans_val, passed, total) 
 
-    write(output_unit,*)
-    write(output_unit,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
-    write(output_unit,*)
-
-    if (passed .ne. total) then
-        write(output_unit, '(a)') "WARNING: Some tests failed!"
-        call abort()
-    end if
+    call finished_tests(passed, total)
 
 end program ndxfile_grp_test

@@ -81,5 +81,22 @@ contains
 
     end subroutine check_array_2d
 
+    subroutine finished_tests(passed, total)
+
+        implicit none
+
+        integer, intent(inout) :: total, passed
+        
+        write(output_unit,*)
+        write(output_unit,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
+        write(output_unit,*)
+
+        if (passed .ne. total) then
+            write(output_unit, '(a)') "WARNING: Some tests failed!"
+            call abort()
+        end if
+
+    end subroutine finished_tests
+
 end module gmxfort_tests
 

@@ -1,6 +1,5 @@
 program utils_test 
 
-    use gmxfort_trajectory
     use gmxfort_utils
     use gmxfort_tests
 
@@ -57,13 +56,6 @@ program utils_test
     call check(x, ans, passed, total)
     call trj%close()
 
-    write(output_unit,*)
-    write(output_unit,'(a,i0,a,i0,a)') "Passed ", passed, " out of ", total, " tests"
-    write(output_unit,*)
-
-    if (passed .ne. total) then
-        write(output_unit, '(a)') "WARNING: Some tests failed!"
-        call abort()
-    end if
+    call finished_tests(passed, total)
 
 end program utils_test
