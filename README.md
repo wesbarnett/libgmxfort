@@ -156,7 +156,10 @@ myatom = trj%x(10, 5, "C")
 
 **Note**: If you have more than one group in your index file with the same name,
 this will simply use the first group with that name. It's best not to repeat
-group names in your index file.
+group names in your index file. The library will give you a warning if it finds
+that an index name is duplicated:
+
+    LIBGMXFORT WARNING: Index group OW specified more than once in index file.
 
 Note that when you use `x()` you will still have to give it the frame number as
 the first argument even if you only read in one frame with `read_next()`.  You

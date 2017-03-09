@@ -122,6 +122,19 @@ contains
         end do
         deallocate(INDICES_TMP)
 
+        do I = 1, NGRPS-1
+            do J = I+1, NGRPS
+                if (I .ne. J) then
+                    if (this%group(I)%title .eq. this%group(J)%title) then
+                        write(error_unit,*)
+                        write(error_unit,'(a, a, a)') "LIBGMXFORT WARNING: Index group ", this%group(I)%title, &
+                            " specified more than once in index file."
+                        write(error_unit,*)
+                    end if
+                end if
+            end do
+        end do
+
         close(INDEX_FILE_UNIT)
         
     end subroutine indexfile_read
