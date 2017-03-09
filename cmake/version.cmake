@@ -18,6 +18,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Version number is stored in a file
 file ( STRINGS "${CMAKE_SOURCE_DIR}/.VERSION" VERSION )
 string ( REPLACE "." ";" VERSION_LIST ${VERSION} )
 list ( GET VERSION_LIST 0 VERSION_MAJOR )

@@ -25,22 +25,22 @@ list ( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 project ( gmxfort NONE )
 
-# Project info
+# Set project info
 include ( info )
 
-# Package version
+# Set package version
 include ( version )
 
-# Build type
+# Set build type
 include ( buildtype )
 
-# Find xdrfile
+# Find xdrfile library and headers
 include ( xdrfile )
 
 # Create library
 add_subdirectory ( src )
 
-# Publicize installed location to other CMake projects
+# Publicize installed location to other CMake projects and pkgconfig
 include ( public )
 
 # Tests
