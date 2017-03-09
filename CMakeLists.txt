@@ -46,8 +46,8 @@ set_target_properties ( ${CMAKE_PROJECT_NAME}
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
   Fortran_MODULE_DIRECTORY "${CMAKE_BINARY_DIR}/include" )
 
-install ( TARGETS ${CMAKE_PROJECT_NAME} LIBRARY DESTINATION lib )
-install ( DIRECTORY "${CMAKE_BINARY_DIR}/include" DESTINATION "${CMAKE_INSTALL_PREFIX}" )
+install ( TARGETS ${CMAKE_PROJECT_NAME} LIBRARY DESTINATION lib CONFIGURATIONS Release)
+install ( DIRECTORY "${CMAKE_BINARY_DIR}/include" DESTINATION "${CMAKE_INSTALL_PREFIX}" CONFIGURATIONS Release)
 
 #-----------------------------------------------------
 # Publicize installed location to other CMake projects
