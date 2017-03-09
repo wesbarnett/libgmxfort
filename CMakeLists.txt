@@ -91,23 +91,29 @@ install ( FILES
 #-----------------------------------------------------
 enable_testing ()
 file ( GLOB TEST_SRC "src/tests/gmxfort_tests.f90" )
-add_library ( gmxfort_tests SHARED ${TEST_SRC} )
-add_executable ( xtcfile src/tests/xtcfile.f90 )
-add_executable ( ndxfile src/tests/ndxfile.f90 )
-add_executable ( ndxfile_grp src/tests/ndxfile_grp.f90 )
-add_executable ( read_next src/tests/read_next.f90 )
-add_executable ( utils src/tests/utils.f90 )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/include )
+add_library ( gmxfort_tests SHARED ${TEST_SRC} )
 target_link_libraries ( gmxfort_tests gmxfort)
+
+add_executable ( xtcfile src/tests/xtcfile.f90 )
 target_link_libraries ( xtcfile gmxfort_tests )
+add_test ( "Read_xtcfile" xtcfile )
+
+add_executable ( ndxfile src/tests/ndxfile.f90 )
 target_link_libraries ( ndxfile gmxfort_tests )
+add_test ( "Read_xtcfile_and_ndxfile" ndxfile )
+
+add_executable ( ndxfile_grp src/tests/ndxfile_grp.f90 )
 target_link_libraries ( ndxfile_grp gmxfort_tests )
+add_test ( "Read_ndx_grp" ndxfile_grp )
+
+add_executable ( read_next src/tests/read_next.f90 )
 target_link_libraries ( read_next gmxfort_tests )
+add_test ( "Read_next" read_next )
+
+add_executable ( utils src/tests/utils.f90 )
 target_link_libraries ( utils gmxfort_tests )
+add_test ( "Utils" utils )
+
 configure_file(src/tests/test.xtc ${CMAKE_CURRENT_BINARY_DIR}/test.xtc COPYONLY)
 configure_file(src/tests/test.ndx ${CMAKE_CURRENT_BINARY_DIR}/test.ndx COPYONLY)
-add_test ( "Read_xtcfile" xtcfile )
-add_test ( "Read_xtcfile_and_ndxfile" ndxfile )
-add_test ( "Read_ndx_grp" ndxfile_grp )
-add_test ( "Read_next" read_next )
-add_test ( "Utils" utils )
