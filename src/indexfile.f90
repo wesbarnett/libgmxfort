@@ -114,7 +114,7 @@ contains
 
             end do
 
-            allocate(this%group(I)%LOC, source=INDICES_TMP(1:this%group(I)%NUMATOMS))
+            allocate(this%group(I)%LOC(1:this%group(I)%NUMATOMS), source=INDICES_TMP(1:this%group(I)%NUMATOMS))
 
         end do
         deallocate(INDICES_TMP)
