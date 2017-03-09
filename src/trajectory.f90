@@ -41,6 +41,7 @@ module gmxfort_trajectory
         integer :: NFRAMES
         integer :: NUMATOMS, N
         integer :: FRAMES_REMAINING
+        logical :: read_only_index_group
     contains
         procedure :: open => trajectory_open
         procedure :: read => trajectory_read
@@ -192,7 +193,11 @@ contains
 
         write(error_unit,*)
 
+        this%read_only_index_group = .false.
+
         if (present(ndxgrp)) then
+
+            this%read_only_index_group = .true.
 
             allocate(xyz(3,this%N))
             this%NUMATOMS = this%natoms(trim(ndxgrp))
@@ -270,6 +275,11 @@ contains
 
         call trajectory_check_frame(this, frame)
 
+        if (this%read_only_index_group .and. present(group)) then
+            call error_stop_program("Do not specify an index group in x() when already specifying an & 
+                &index group with read() or read_next().")
+        end if
+
         atom_tmp = merge(this%ndx%get(group, atom), atom, present(group))
         natoms = merge(this%natoms(group), this%natoms(), present(group))
 
@@ -289,6 +299,11 @@ contains
         integer :: trajectory_get_natoms
         class(Trajectory), intent(in) :: this
         character (len=*), intent(in), optional :: group
+
+        if (this%read_only_index_group .and. present(group)) then
+            call error_stop_program("Do not specify an index group in natoms() when already specifying an & 
+                &index group with read() or read_next().")
+        end if
         
         trajectory_get_natoms = merge(this%ndx%get_natoms(group), this%NUMATOMS, present(group))
 

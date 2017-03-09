@@ -33,7 +33,7 @@ contains
         character (len=*), intent(in) :: message
 
         write(error_unit,*)
-        write(error_unit,'(a, a)') "ERROR: ", message
+        write(error_unit,'(a, a)') "LIBGMXFORT ERROR: ", message
         write(error_unit,*)
         call abort()
 
