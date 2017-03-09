@@ -69,7 +69,6 @@ module gmxfort_trajectory
             integer(C_INT), intent(out) :: NUMATOMS
         end function
 
-        ! TODO: Not used in this module
         type(C_PTR) function xdrfile_open(filename,mode) bind(C, name='xdrfile_open')
             import
             character(kind=C_CHAR), intent(in) :: filename(*), mode(*)
