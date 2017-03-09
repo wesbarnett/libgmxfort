@@ -19,5 +19,5 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 find_package ( xdrfile REQUIRED )
-message(STATUS "Found xdrfile library at: ${xdrfile_LIBRARIES}")
-message(STATUS "Found xdrfile include dirs at: ${xdrfile_INCLUDE_DIRS}")
+message ( STATUS "Found xdrfile library at: ${xdrfile_LIBRARIES}" )
+message ( STATUS "Found xdrfile include dirs at: ${xdrfile_INCLUDE_DIRS}" )

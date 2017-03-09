@@ -31,7 +31,7 @@ configure_package_config_file (
   "${CMAKE_SOURCE_DIR}/cmake/pkg/${CMAKE_PROJECT_NAME}-config.cmake.in"
   "${CMAKE_BINARY_DIR}/pkg/${PACKAGE_NAME}-config.cmake"
   INSTALL_DESTINATION "${EXPORT_INSTALL_DIR}"
-  PATH_VARS EXPORT_INSTALL_DIR)
+  PATH_VARS EXPORT_INSTALL_DIR )
 
 # Install the config and version files so that we can find this project with
 # others
@@ -44,9 +44,7 @@ install ( FILES
 configure_file(
    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/lib${CMAKE_PROJECT_NAME}.pc.cmake.in"
    "${CMAKE_CURRENT_BINARY_DIR}/lib${CMAKE_PROJECT_NAME}.pc"
-   @ONLY
-)
+   @ONLY )
 install ( FILES
    "${CMAKE_CURRENT_BINARY_DIR}/lib${CMAKE_PROJECT_NAME}.pc"
-   DESTINATION "${LIBDIR}/pkgconfig"
-)
+   DESTINATION "${LIBDIR}/pkgconfig" )
