@@ -224,7 +224,10 @@ trj%read(xtcfile, ndxfile, "C")
 
 If you do this, you only have access to the group above, and you never should
 pass an index group name to getters like `x()`, since only one group is
-available.
+available. If you do specify a group in a getter after already specifying it in
+`read()` or `read_next()`, you will get this error:
+
+    LIBGMXFORT ERROR: Do not specify an index group in x() when already specifying an index group with read() or read_next().
 
 There are several functions and subroutines in the `gmxfort_utils` module,
 including periodic boundary and distance calculations. Check out the source file
