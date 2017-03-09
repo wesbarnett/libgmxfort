@@ -17,10 +17,10 @@ After cloning the repository, or extracting the release tarball, cd into the
 repository. Then:
 
 ```bash
-$ mkdir build
-$ cd build
-$ cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
-$ make
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make
 ```
 
 ## Testing
@@ -28,7 +28,7 @@ $ make
 To test your build, do:
 
 ```bash
-$ make test
+make test
 ```
 
 If the tests do not pass, please file an issue.
@@ -39,7 +39,7 @@ The following will install the library to the location specified by
 `DCMAKE_INSTALL_PREFIX`.
 
 ```bash
-# make install
+make install
 ```
 
 ## Usage
