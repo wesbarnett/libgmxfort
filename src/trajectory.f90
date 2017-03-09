@@ -197,8 +197,6 @@ contains
 
         if (present(ndxgrp)) then
 
-            this%read_only_index_group = .true.
-
             allocate(xyz(3,this%N))
             this%NUMATOMS = this%natoms(trim(ndxgrp))
             do I = 1, N
@@ -220,6 +218,8 @@ contains
 
             end do
             deallocate(xyz)
+
+            this%read_only_index_group = .true.
 
         else
 
@@ -299,6 +299,11 @@ contains
         integer :: trajectory_get_natoms
         class(Trajectory), intent(in) :: this
         character (len=*), intent(in), optional :: group
+
+        if (this%read_only_index_group .and. present(group)) then
+            call error_stop_program("Do not specify an index group in natoms() when already specifying an & 
+                &index group with read() or read_next().")
+        end if
 
         trajectory_get_natoms = merge(this%ndx%get_natoms(group), this%NUMATOMS, present(group))
 
