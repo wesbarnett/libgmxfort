@@ -243,6 +243,7 @@ contains
 
     subroutine print_frames_saved(I)
 
+        implicit none
         integer, intent(in) :: I
         write(error_unit,'(a,i0)') achar(27)//"[1A"//achar(27)//"[K"//"Frames saved: ", I
 

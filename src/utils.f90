@@ -27,6 +27,7 @@ contains
 
     function pbc(a, box)
 
+        implicit none
         real(8), intent(in) :: a(3), box(3,3)
         real(8) :: pbc(3)
         integer :: I
@@ -42,6 +43,7 @@ contains
 
     function cross(a, b)
 
+        implicit none
         real(8) :: cross(3)
         real(8), intent(in), dimension(3) :: a, b
 
@@ -54,6 +56,7 @@ contains
 
     function distance2(a, b, box)
 
+        implicit none
         real(8) :: distance2
         real(8), intent(in), dimension(3) :: a, b
         real(8) :: c(3)
@@ -67,6 +70,7 @@ contains
 
     function distance(a, b, box)
 
+        implicit none
         real(8) :: distance
         real(8), intent(in), dimension(3) :: a, b
         real(8), intent(in) :: box(3,3)
@@ -76,6 +80,7 @@ contains
 
     function bond_vector(a, b, box)
 
+        implicit none
         real(8) :: bond_vector(3)
         real(8), intent(in), dimension(3) :: a, b
         real(8), intent(in) :: box(3,3)
@@ -87,6 +92,7 @@ contains
 
     function magnitude(a)
 
+        implicit none
         real(8) :: magnitude
         real(8), intent(in) :: a(3)
 
@@ -97,6 +103,7 @@ contains
 
     function bond_angle(a, b, c, box)
 
+        implicit none
         real(8) :: bond_angle
         real(8), intent(in), dimension(3) :: a, b, c
         real(8), intent(in) :: box(3,3)
@@ -112,6 +119,7 @@ contains
 
     function dihedral_angle(i, j, k, l, box)
 
+        implicit none
         real(8) :: dihedral_angle
         real(8), intent(in), dimension(3) :: i, j, k, l
         real(8), intent(in), dimension(3,3) :: box

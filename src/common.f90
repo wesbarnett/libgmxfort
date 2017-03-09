@@ -29,6 +29,7 @@ contains
 
     subroutine error_stop_program(message)
 
+        implicit none
         character (len=*), intent(in) :: message
 
         write(error_unit,*)

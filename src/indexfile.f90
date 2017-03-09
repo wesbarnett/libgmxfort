@@ -42,6 +42,7 @@ module gmxfort_index
 contains
 
     subroutine indexfile_read(this, filename, N)
+
         implicit none
         class(IndexFile), intent(inout) :: this
         character (len=*), intent(in) :: filename
