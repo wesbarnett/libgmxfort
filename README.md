@@ -225,7 +225,7 @@ argument. To save memory, you can save just a specific index group with
 trj%read(xtcfile, ndxfile, "C")
 ```
 
-If you do this, you only have access to the group above, and you never should
+If you do this, you only have access to the group above, and you should never 
 pass an index group name to getters like `x()`, since only one group is
 available. If you do specify a group in a getter after already specifying it in
 `read()` or `read_next()`, you will get this error:
