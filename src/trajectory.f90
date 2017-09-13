@@ -297,7 +297,7 @@ contains
 
         implicit none
         integer :: trajectory_get_natoms
-        class(Trajectory), intent(in) :: this
+        class(Trajectory), intent(inout) :: this
         character (len=*), intent(in), optional :: group
 
         if (this%read_only_index_group .and. present(group)) then

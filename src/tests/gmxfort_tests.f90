@@ -113,7 +113,7 @@ contains
 
         if (passed .ne. total) then
             write(output_unit, '(a)') "WARNING: Some tests failed!"
-            call abort()
+            stop 1
         end if
 
     end subroutine finished_tests
