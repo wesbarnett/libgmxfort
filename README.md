@@ -7,6 +7,8 @@ are also included like periodic boundary condition and distance functions. It
 uses an object-oriented philosophy for reading in, storing, and retrieving
 simulation data for analysis.
 
+Also check out [dcdfort](https://github.com/wesbarnett/dcdfort).
+
 ## Requirements
 
 [xdrfile](https://github.com/wesbarnett/libxdrfile)>=2.1.2 is required.
