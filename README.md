@@ -1,5 +1,7 @@
 # libgmxfort
 
+[![DOI](https://zenodo.org/badge/71169051.svg)](https://zenodo.org/badge/latestdoi/71169051)
+
 This is a modern Fortran library for reading in an analyzing
 [GROMACS](http://www.gromacs.org/) compressed
 trajectory files (.xtc) and index files (.ndx). Some helpful utilities functions
