@@ -2,7 +2,7 @@
 ! This file is part of libgmxfort
 ! https://github.com/wesbarnett/libgmxfort
 !
-! Copyright (c) 2016,2017 James W. Barnett
+! Copyright (c) 2016-2019 James W. Barnett
 !
 ! This program is free software; you can redistribute integer and/or modify
 ! integer under the terms of the GNU General Public License as published by
