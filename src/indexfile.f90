@@ -160,7 +160,7 @@ contains
                 if (I .ne. J) then
                     if (this%group(I)%title .eq. this%group(J)%title) then
                         write(error_unit,*)
-                        write(error_unit,'(a, a, a)') "LIBDCDFORT WARNING: Index group ", this%group(I)%title, &
+                        write(error_unit,'(a, a, a)') "LIBGMXFORT WARNING: Index group ", this%group(I)%title, &
                             " was specified more than once in index file."
                         write(error_unit,*)
                     end if
@@ -218,14 +218,14 @@ contains
         ! since the overall index cannot be returned in that case
         if (.not. present(I)) then
             if (this%group_warning) then
-                write(error_unit, '(a)') "LIBDCDFORT WARNING: No atoms found in index group '"//trim(group_name)//"'."
+                write(error_unit, '(a)') "LIBGMXFORT WARNING: No atoms found in index group '"//trim(group_name)//"'."
                 write(error_unit, '(a)') "This warning will not appear again for any other index groups."
                 this%group_warning = .false.
             end if
             indexfile_get = 0
         else
             indexfile_get = -1
-            write(error_unit, '(a)') "LIBDCDFORT ERROR: "//trim(group_name)//" is not in index file. The groups available are:"
+            write(error_unit, '(a)') "LIBGMXFORT ERROR: "//trim(group_name)//" is not in index file. The groups available are:"
             do J = 1, size(this%group)
                 write(error_unit,'(a10,a,i0,a)') this%group(J)%title, " (", this%group(J)%NUMATOMS, ")"
             end do
