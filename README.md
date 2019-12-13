@@ -66,7 +66,7 @@ find the file (by default in the directory `/usr/local/lib/pkgconfig`)
 
 ### API
 
-To use the library always put `use gmxfort_trajectory` for in order to use the
+To use the library always put `use gmxfort_trajectory` first in order to use the
 `Trajectory` class and `use gmxfort_utils` in order to use any of the other
 utilities.  There is an example in the `example` folder on how to do this.
 Additionally [sasa](https://github.com/wesbarnett/sasa) uses libgmxfort.
@@ -246,7 +246,7 @@ for what is available.
 
 libgmxfort
 
-Copyright (C) 2016,2017 James W. Barnett
+Copyright (C) 2016-2019 James W. Barnett
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
