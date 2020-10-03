@@ -1,5 +1,9 @@
 # libgmxfort
 
+**Repository update 10/03/2020: This project has been archived and is read-only. I can no
+longer support users with the library. I hope it was useful to you in your analysis.
+Please fork and keep developing it if you have found it useful.**
+
 [![DOI](https://zenodo.org/badge/71169051.svg)](https://zenodo.org/badge/latestdoi/71169051)
 
 This is a modern Fortran library for reading in an analyzing
